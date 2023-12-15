@@ -51,6 +51,41 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
+	config, reserved, err := configGenerate("wireguard", "test.json")
+	if err != nil {
+		panic(err)
+	}
+	err = os.WriteFile("test.conf", []byte(config), 0600)
+	if err != nil {
+		panic(err)
+	}
+	output, err = nftConfigGenerate(reserved)
+	if err != nil {
+		panic(err)
+	}
+	err = os.WriteFile("test.nft.conf", []byte(output), 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	config, _, err = configGenerate("xray", "test.json")
+	if err != nil {
+		panic(err)
+	}
+	err = os.WriteFile("wgcf.xray.json", []byte(config), 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	config, _, err = configGenerate("sing-box", "test.json")
+	if err != nil {
+		panic(err)
+	}
+	err = os.WriteFile("wgcf.sing-box.json", []byte(config), 0600)
+	if err != nil {
+		panic(err)
+	}
+
 	token, id, err := readConfigFile(action.FileName)
 	if err != nil {
 		panic(err)
@@ -96,14 +131,33 @@ func TestMain(m *testing.M) {
 	}
 	fmt.Println("Cancled")
 
-	err = os.Remove(action.FileName)
-	if err != nil {
-		panic(err)
-	}
-
 	err = os.Remove("test.json")
 	if err != nil {
 		panic(err)
 	}
 
+	err = os.Remove(action.FileName)
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Remove("test.conf")
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Remove("test.nft.conf")
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Remove("wgcf.xray.json")
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Remove("wgcf.sing-box.json")
+	if err != nil {
+		panic(err)
+	}
 }

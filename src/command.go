@@ -16,6 +16,7 @@ type Actions struct {
 	License  string
 	FileName string
 	Name     string
+	Generate string
 }
 
 func ParseCommandLine() Actions {
@@ -45,6 +46,9 @@ func ParseCommandLine() Actions {
 	flag.StringVar(&action.Name, "n", "", "")
 	flag.StringVar(&action.Name, "name", "", "")
 
+	flag.StringVar(&action.Generate, "g", "", "")
+	flag.StringVar(&action.Generate, "generate", "", "")
+
 	flag.Visit(
 		func(f *flag.Flag) {
 			if f.Name == "h" || f.Name == "help" {
@@ -70,6 +74,9 @@ func ParseCommandLine() Actions {
 			}
 			if f.Name == "n" || f.Name == "name" {
 				action.Name = f.Value.String()
+			}
+			if f.Name == "g" || f.Name == "generate" {
+				action.Generate = f.Value.String()
 			}
 		},
 	)
@@ -98,7 +105,8 @@ func ParseCommandLine() Actions {
 
 func help() {
 	fmt.Fprintf(os.Stderr,
-		`Usage:	%s [Options]
+		`wg-cli Revision: __REVISION__
+Usage:	%s [Options]
 Options:		-h/--help			help
 			-f/--file [string]		Configuration file (default "wgcf.json")
 			-r/--register			Register an account
@@ -107,5 +115,6 @@ Options:		-h/--help			help
 			-l/--license [string]		Change the license
 			-u/--unbind			Unbind a device from the account
 			-c/--cancle			Cancle the account
+			-g/--generate [wg/xray]		Generate a [wg/xray] configuration file
 `, os.Args[0])
 }

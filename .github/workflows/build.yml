@@ -113,6 +113,10 @@ jobs:
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v4
+        
+      - name: Set REVISION
+        run: |
+          sed -i "s/__REVISION__/$(git rev-parse HEAD)/g" src/command.go
 
       - name: Show workflow information 
         run: |

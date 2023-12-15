@@ -118,7 +118,7 @@ func main() {
 		panic(err)
 	}
 
-	if !action.Bind && !action.UnBind && !action.Cancle && action.License == "" && action.Name == "" {
+	if !action.Bind && !action.UnBind && !action.Cancle && action.License == "" && action.Name == "" && action.Generate == "" {
 		err := fmt.Sprintln("You need to specify an action")
 		panic(err)
 	}
@@ -171,7 +171,6 @@ func main() {
 	}
 
 	if action.License != "" {
-
 		token, id, err := readConfigFile(action.FileName)
 		if err != nil {
 			panic(err)
@@ -190,7 +189,11 @@ func main() {
 		return
 	}
 
-	if action.Name != "" && !strings.HasPrefix(action.Name, "-") {
+	if strings.HasPrefix(action.Name, "-") {
+		err := fmt.Sprintln("The parameter must not start with '-'")
+		panic(err)
+	}
+	if action.Name != "" {
 		token, id, err := readConfigFile(action.FileName)
 		if err != nil {
 			panic(err)
@@ -202,8 +205,49 @@ func main() {
 		}
 		fmt.Println(output)
 		return
-	} else {
+	}
+
+	if strings.HasPrefix(action.Generate, "-") {
 		err := fmt.Sprintln("The parameter must not start with '-'")
 		panic(err)
 	}
+	if action.Generate != "" && action.Generate == "wg" {
+		config, reserved, err := configGenerate("wireguard", action.FileName)
+		if err != nil {
+			panic(err)
+		}
+		err = os.WriteFile(action.FileName+".wgcf.conf", []byte(config), 0600)
+		if err != nil {
+			panic(err)
+		}
+		output, err := nftConfigGenerate(reserved)
+		if err != nil {
+			panic(err)
+		}
+		err = os.WriteFile("wgcf.nft.conf", []byte(output), 0600)
+		if err != nil {
+			panic(err)
+		}
+	} else if action.Generate != "" && action.Generate == "xray" {
+		config, _, err := configGenerate("xray", action.FileName)
+		if err != nil {
+			panic(err)
+		}
+		err = os.WriteFile(action.FileName+".xray.json", []byte(config), 0600)
+		if err != nil {
+			panic(err)
+		}
+		return
+	} else if action.Generate != "" && action.Generate == "sing-box" {
+		config, _, err := configGenerate("sing-box", action.FileName)
+		if err != nil {
+			panic(err)
+		}
+		err = os.WriteFile(action.FileName+".sing-box.json", []byte(config), 0600)
+		if err != nil {
+			panic(err)
+		}
+		return
+	}
+
 }
