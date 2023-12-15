@@ -10,7 +10,7 @@ func getBindingDevices(token string, id string) (string, error) {
 		ID        string    `json:"id"`
 		Type      string    `json:"type"`
 		Model     string    `json:"model"`
-		Name      string    `json:"name,omitempty"` // 使用 omitempty 表示该字段是可选的
+		Name      string    `json:"name,omitempty"`
 		Created   time.Time `json:"created"`
 		Activated time.Time `json:"activated"`
 		Active    bool      `json:"active"`
@@ -18,7 +18,7 @@ func getBindingDevices(token string, id string) (string, error) {
 	}
 	var response []Device
 
-	body, err := request([]byte(``), token, id, "bind", "GET")
+	body, err := request([]byte(``), token, id, "bind")
 	if err != nil {
 		panic(err)
 	}

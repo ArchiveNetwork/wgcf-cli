@@ -3,22 +3,29 @@ package main
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
 
-func request(payload []byte, token string, id string, action string, method string) ([]byte, error) {
-	var url string
+func request(payload []byte, token string, id string, action string) ([]byte, error) {
+	var url, method string
 	if action == "register" {
 		url = "https://api.cloudflareclient.com/v0a2158/reg"
+		method = "POST"
 	} else if action == "license" {
 		url = "https://api.cloudflareclient.com/v0a2158/reg/" + id + "/account"
+		method = "PUT"
 	} else if action == "bind" {
 		url = "https://api.cloudflareclient.com/v0a2158/reg/" + id + "/account/devices"
+		method = "GET"
 	} else if action == "name" || action == "unbind" {
 		url = "https://api.cloudflareclient.com/v0a2158/reg/" + id + "/account/reg/" + id
+		method = "PATCH"
 	} else if action == "cancle" {
 		url = "https://api.cloudflareclient.com/v0a2158/reg/" + id
+		method = "DELETE"
 	}
 
 	client := &http.Client{
@@ -49,6 +56,17 @@ func request(payload []byte, token string, id string, action string, method stri
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		panic(err)
+	}
+
+	statusCode := response.StatusCode
+	if statusCode != 204 && statusCode != 200 {
+		var prettyJSON bytes.Buffer
+		err := json.Indent(&prettyJSON, body, "", "  ")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(prettyJSON.String())
+		panic("REST API returned " + fmt.Sprint(statusCode) + " " + http.StatusText(statusCode))
 	}
 
 	return body, nil

@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"regexp"
+	"strings"
 )
 
 type Response struct {
@@ -72,6 +72,11 @@ func main() {
 		return
 	}
 
+	if action.Help {
+		help()
+		return
+	}
+
 	if action.Register {
 		store, output, err := register()
 		if err != nil {
@@ -83,6 +88,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			return
 		} else {
 			fileName := "wgcf.json"
 			editedFileName := "wgcf.json"
@@ -101,11 +107,20 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			return
 		}
 	}
 
 	if action.FileName == "" {
 		action.FileName = "wgcf.json"
+	} else if strings.HasPrefix(action.FileName, "-") {
+		err := fmt.Sprintln("The parameter must not start with '-'")
+		panic(err)
+	}
+
+	if !action.Bind && !action.UnBind && !action.Cancle && action.License == "" && action.Name == "" {
+		err := fmt.Sprintln("You need to specify an action")
+		panic(err)
 	}
 
 	if action.Bind {
@@ -119,6 +134,7 @@ func main() {
 			panic(err)
 		}
 		fmt.Println(output)
+		return
 	}
 
 	if action.UnBind {
@@ -132,6 +148,7 @@ func main() {
 			panic(err)
 		}
 		fmt.Println(output)
+		return
 	}
 
 	if action.Cancle {
@@ -144,7 +161,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		err = os.Remove(action.FileName)
+		if err != nil {
+			panic(err)
+		}
 		fmt.Println("Cancled")
+		return
 	}
 
 	if action.License != "" {
@@ -164,9 +187,10 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		return
 	}
 
-	if action.Name != "" {
+	if action.Name != "" && !strings.HasPrefix(action.Name, "-") {
 		token, id, err := readConfigFile(action.FileName)
 		if err != nil {
 			panic(err)
@@ -177,100 +201,9 @@ func main() {
 			panic(err)
 		}
 		fmt.Println(output)
+		return
+	} else {
+		err := fmt.Sprintln("The parameter must not start with '-'")
+		panic(err)
 	}
-}
-
-type Actions struct {
-	Register bool
-	Bind     bool
-	UnBind   bool
-	Cancle   bool
-	License  string
-	FileName string
-	Name     string
-}
-
-func ParseCommandLine() Actions {
-	var action Actions
-	flag.BoolVar(&action.Register, "r", false, "")
-	flag.BoolVar(&action.Register, "register", false, "")
-
-	flag.BoolVar(&action.Bind, "b", false, "")
-	flag.BoolVar(&action.Bind, "bind", false, "")
-
-	flag.BoolVar(&action.UnBind, "u", false, "")
-	flag.BoolVar(&action.UnBind, "unbind", false, "")
-
-	flag.BoolVar(&action.Cancle, "c", false, "")
-	flag.BoolVar(&action.Cancle, "cancle", false, "")
-
-	flag.StringVar(&action.FileName, "f", "", "")
-	flag.StringVar(&action.FileName, "file", "", "")
-
-	flag.StringVar(&action.License, "l", "", "")
-	flag.StringVar(&action.License, "license", "", "")
-
-	flag.StringVar(&action.Name, "n", "", "")
-	flag.StringVar(&action.Name, "name", "", "")
-
-	flag.Visit(
-		func(f *flag.Flag) {
-			if f.Name == "r" || f.Name == "register" {
-				action.Register = true
-			}
-			if f.Name == "b" || f.Name == "bind" {
-				action.Bind = true
-			}
-			if f.Name == "u" || f.Name == "unbind" {
-				action.UnBind = true
-			}
-			if f.Name == "c" || f.Name == "cancle" {
-				action.Cancle = true
-			}
-			if f.Name == "f" || f.Name == "file" {
-				action.FileName = f.Value.String()
-			}
-			if f.Name == "l" || f.Name == "license" {
-				action.License = f.Value.String()
-			}
-			if f.Name == "n" || f.Name == "name" {
-				action.Name = f.Value.String()
-			}
-		},
-	)
-
-	flag.Usage = func() {
-		help()
-	}
-
-	flag.Parse()
-
-	if action.License != "" {
-		expectedPattern := `^[0-9A-Za-z]{8}-[0-9A-Za-z]{8}-[0-9A-Za-z]{8}$`
-
-		match, err := regexp.MatchString(expectedPattern, action.License)
-		if err != nil {
-			panic(err)
-		}
-
-		if !match {
-			panic("License should be something matchs: ^[0-9A-Za-z]{8}-[0-9A-Za-z]{8}-[0-9A-Za-z]{8}$")
-		}
-	}
-
-	return action
-}
-
-func help() {
-	fmt.Fprintf(os.Stderr,
-		`Usage:	%s [Options]
-Options:		-h/--help			help
-			-f/--file [string]		Configuration file (default "wgcf.json")
-			-r/--register			Register an account
-			-b/--bind			Get the account binding devices
-			-n/--name [string]		Change the device name
-			-l/--license [string]		Change the license
-			-u/--unbind			Unbind a device from the account
-			-c/--cancle			Cancle the account
-`, os.Args[0])
 }

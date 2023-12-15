@@ -40,7 +40,7 @@ func register() ([]byte, string, error) {
 			"serial_number":"` + installID + `"
 		}`,
 	)
-	body, err := request(payload, "", "", "register", "POST")
+	body, err := request(payload, "", "", "register")
 	if err != nil {
 		panic(err)
 	}

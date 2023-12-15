@@ -11,14 +11,14 @@ on:
       - "**/*.go"
       - "go.mod"
       - "go.sum"
-      - ".github/workflows/*.yml"
+      - ".github/workflows/build.yml"
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - "**/*.go"
       - "go.mod"
       - "go.sum"
-      - ".github/workflows/*.yml"
+      - ".github/workflows/build.yml"
 jobs:
   build:
     permissions:
@@ -120,15 +120,11 @@ jobs:
           echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM, GOMIPS: $GOMIPS, RELEASE_NAME: $_NAME"
           echo "ASSET_NAME=$_NAME" >> $GITHUB_ENV
 
-      - name: Get Go version
-        id: version
-        run: |
-            echo go_version=$(curl -sL https://golang.org/VERSION?m=text|head -1|sed 's/go//g') >> $GITHUB_OUTPUT
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ steps.version.outputs.go_version }}
+          go-version: 'stable'
+          check-latest: true
 
       - name: Get project dependencies
         run: go mod download

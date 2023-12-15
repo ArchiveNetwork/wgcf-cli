@@ -22,7 +22,7 @@ func unBind(token string, id string) (string, error) {
 			"active": false
 		 }`,
 	)
-	body, err := request(payload, token, id, "unbind", "PATCH")
+	body, err := request(payload, token, id, "unbind")
 	if err != nil {
 		panic(err)
 	}

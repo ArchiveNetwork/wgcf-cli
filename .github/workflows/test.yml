@@ -8,14 +8,14 @@ on:
       - "**/*.go"
       - "go.mod"
       - "go.sum"
-      - ".github/workflows/*.yml"
+      - ".github/workflows/test.yml"
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - "**/*.go"
       - "go.mod"
       - "go.sum"
-      - ".github/workflows/*.yml"
+      - ".github/workflows/test.yml"
 
 jobs:
   test:
@@ -27,16 +27,16 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
-      - name: Get Go version
-        id: version
-        run: |
-            echo go_version=$(curl -sL https://golang.org/VERSION?m=text|head -1|sed 's/go//g') >> $GITHUB_OUTPUT
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ steps.version.outputs.go_version }}
+          go-version: 'stable'
+          check-latest: true
+
       - name: Checkout codebase
         uses: actions/checkout@v4
+
       - name: Test
         run: |
           echo '${{secrets.CONFIG_FILE}}' > ./src/wgcf.json

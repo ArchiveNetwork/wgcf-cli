@@ -22,7 +22,7 @@ func changeName(token string, id string, name string) (string, error) {
 			"name":"` + name + `"
 		 }`,
 	)
-	body, err := request(payload, token, id, "name", "PATCH")
+	body, err := request(payload, token, id, "name")
 	if err != nil {
 		panic(err)
 	}

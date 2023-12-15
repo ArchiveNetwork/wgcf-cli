@@ -40,6 +40,10 @@ Thanks: [@badafans](https://github.com/badafans), [badafans/warp-reg](https://gi
     "role": "child"
 }
 ```
+## Install
+```bash
+bash -c "$(curl -L wgcf-cli.vercel.app)"
+```
 ## Build 
 ```bash
 go build -trimpath -ldflags "-s -w -buildid=" -o wgcf-cli ./src/

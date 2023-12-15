@@ -23,7 +23,7 @@ func changeLicense(token string, id string, license string) (string, error) {
 			"license":"` + license + `"
 		 }`,
 	)
-	body, err := request(payload, token, id, "license", "PUT")
+	body, err := request(payload, token, id, "license")
 	if err != nil {
 		panic(err)
 	}

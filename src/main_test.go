@@ -1,21 +1,52 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"testing"
 )
 
+func readLicense(filePath string) (string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+
+	var ReadedFile Response
+	err = json.Unmarshal(content, &ReadedFile)
+	if err != nil {
+		panic(err)
+	}
+
+	return ReadedFile.Account.License, nil
+}
+
 func TestMain(m *testing.M) {
 	var action Actions
+	var err error
+
 	action.FileName = "wgcf.json"
-	action.License = "m48b9e0W-3N9eR1T7-78I0d1Qh"
+
 	store, output, err := register()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
+
 	err = os.WriteFile("test.json", store, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	action.License, err = readLicense("test.json")
 	if err != nil {
 		panic(err)
 	}
