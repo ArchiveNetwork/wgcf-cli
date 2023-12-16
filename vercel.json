@@ -1,5 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/(.*)", "destination": "https://github.com/chise0713/wgcf-cli/raw/master/scripts/install.sh" }
-  ]
-}
