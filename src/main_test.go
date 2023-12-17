@@ -9,14 +9,16 @@ import (
 )
 
 func readLicense(filePath string) (string, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
+	var file *os.File
+	var content []byte
+	var err error
+
+	if file, err = os.Open(filePath); err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	content, err := io.ReadAll(file)
-	if err != nil {
+	if content, err = io.ReadAll(file); err != nil {
 		panic(err)
 	}
 
@@ -31,18 +33,18 @@ func readLicense(filePath string) (string, error) {
 
 func TestMain(m *testing.M) {
 	var action Actions
+	var store []byte
+	var config, token, id, reserved, output string
 	var err error
 
 	action.FileName = "wgcf.json"
 
-	store, output, err := register()
-	if err != nil {
+	if store, output, err = register(); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	err = os.WriteFile("test.json", store, 0600)
-	if err != nil {
+	if err = os.WriteFile("test.json", store, 0600); err != nil {
 		panic(err)
 	}
 
@@ -51,113 +53,96 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	config, reserved, err := configGenerate("wireguard", "test.json")
-	if err != nil {
-		panic(err)
-	}
-	err = os.WriteFile("test.conf", []byte(config), 0600)
-	if err != nil {
-		panic(err)
-	}
-	output, err = nftConfigGenerate(reserved)
-	if err != nil {
-		panic(err)
-	}
-	err = os.WriteFile("test.nft.conf", []byte(output), 0600)
-	if err != nil {
+	if config, reserved, err = configGenerate("wireguard", "test.json"); err != nil {
 		panic(err)
 	}
 
-	config, _, err = configGenerate("xray", "test.json")
-	if err != nil {
-		panic(err)
-	}
-	err = os.WriteFile("wgcf.xray.json", []byte(config), 0600)
-	if err != nil {
+	if err = os.WriteFile("test.conf", []byte(config), 0600); err != nil {
 		panic(err)
 	}
 
-	config, _, err = configGenerate("sing-box", "test.json")
-	if err != nil {
-		panic(err)
-	}
-	err = os.WriteFile("wgcf.sing-box.json", []byte(config), 0600)
-	if err != nil {
+	if output, err = nftConfigGenerate(reserved); err != nil {
 		panic(err)
 	}
 
-	token, id, err := readConfigFile(action.FileName)
-	if err != nil {
+	if err = os.WriteFile("test.nft.conf", []byte(output), 0600); err != nil {
 		panic(err)
 	}
 
-	output, err = getBindingDevices(token, id)
-	if err != nil {
+	if config, _, err = configGenerate("xray", "test.json"); err != nil {
+		panic(err)
+	}
+
+	if err = os.WriteFile("wgcf.xray.json", []byte(config), 0600); err != nil {
+		panic(err)
+	}
+
+	if config, _, err = configGenerate("sing-box", "test.json"); err != nil {
+		panic(err)
+	}
+
+	if err = os.WriteFile("wgcf.sing-box.json", []byte(config), 0600); err != nil {
+		panic(err)
+	}
+
+	if token, id, err = readConfigFile(action.FileName); err != nil {
+		panic(err)
+	}
+
+	if output, err = getBindingDevices(token, id); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	output, err = unBind(token, id)
-	if err != nil {
+	if output, err = unBind(token, id); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	output, err = changeLicense(token, id, action.License)
-	if err != nil {
+	if output, err = changeLicense(token, id, action.License); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	err = editFile(action.FileName, action.License)
-	if err != nil {
+	if err = editFile(action.FileName, action.License); err != nil {
 		panic(err)
 	}
 
-	output, err = changeName(token, id, action.Name)
-	if err != nil {
+	if output, err = changeName(token, id, action.Name); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	token, id, err = readConfigFile("test.json")
-	if err != nil {
+	if token, id, err = readConfigFile("test.json"); err != nil {
 		panic(err)
 	}
 
-	err = cancleAccount(token, id)
-	if err != nil {
+	if err = cancleAccount(token, id); err != nil {
 		panic(err)
 	}
 	fmt.Println("Cancled")
 
-	err = os.Remove("test.json")
-	if err != nil {
+	if err = os.Remove("test.json"); err != nil {
 		panic(err)
 	}
 
-	err = os.Remove(action.FileName)
-	if err != nil {
+	if err = os.Remove(action.FileName); err != nil {
 		panic(err)
 	}
 
-	err = os.Remove("test.conf")
-	if err != nil {
+	if err = os.Remove("test.conf"); err != nil {
 		panic(err)
 	}
 
-	err = os.Remove("test.nft.conf")
-	if err != nil {
+	if err = os.Remove("test.nft.conf"); err != nil {
 		panic(err)
 	}
 
-	err = os.Remove("wgcf.xray.json")
-	if err != nil {
+	if err = os.Remove("wgcf.xray.json"); err != nil {
 		panic(err)
 	}
 
-	err = os.Remove("wgcf.sing-box.json")
-	if err != nil {
+	if err = os.Remove("wgcf.sing-box.json"); err != nil {
 		panic(err)
 	}
 }

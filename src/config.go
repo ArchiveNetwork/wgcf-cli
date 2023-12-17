@@ -54,20 +54,22 @@ type Wireguard struct {
 }
 
 func configGenerate(generateType string, filePath string) (string, string, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
+	var err error
+	var content []byte
+	var config []byte
+	var file *os.File
+	if file, err = os.Open(filePath); err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	content, err := io.ReadAll(file)
-	if err != nil {
+	if content, err = io.ReadAll(file); err != nil {
 		panic(err)
 	}
 
 	var ReadedFile Response
-	err = json.Unmarshal(content, &ReadedFile)
-	if err != nil {
+
+	if err = json.Unmarshal(content, &ReadedFile); err != nil {
 		panic(err)
 	}
 
@@ -103,8 +105,8 @@ func configGenerate(generateType string, filePath string) (string, string, error
 			},
 			Tag: "wireguard",
 		}
-		config, err := json.MarshalIndent(input, "", "    ")
-		if err != nil {
+
+		if config, err = json.MarshalIndent(input, "", "    "); err != nil {
 			panic(err)
 		}
 		return string(config), "", nil
@@ -174,9 +176,6 @@ Endpoint = %s`,
 			input.Peer.AllowedIPs,
 			input.Peer.Endpoint,
 		)
-		if err != nil {
-			panic(err)
-		}
 		return config, input.Reserved, nil
 	} else if generateType == "sing-box" {
 		input := singBox{
@@ -190,8 +189,8 @@ Endpoint = %s`,
 			Reserved:      ReadedFile.Config.ClientID,
 			MTU:           1280,
 		}
-		config, err := json.MarshalIndent(input, "", "    ")
-		if err != nil {
+
+		if config, err = json.MarshalIndent(input, "", "    "); err != nil {
 			panic(err)
 		}
 		return string(config), "", nil

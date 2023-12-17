@@ -17,22 +17,26 @@ func unBind(token string, id string) (string, error) {
 		Role      string    `json:"role"`
 	}
 	var response []Device
-	payload := []byte(
+	var err error
+	var payload, body, output []byte
+
+	payload = []byte(
 		`{
 			"active": false
 		 }`,
 	)
-	body, err := request(payload, token, id, "unbind")
-	if err != nil {
+
+	if body, err = request(payload, token, id, "unbind"); err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal(body, &response)
-	if err != nil {
+
+	if err = json.Unmarshal(body, &response); err != nil {
 		panic(err)
 	}
-	output, err := json.MarshalIndent(response, "", "    ")
-	if err != nil {
+
+	if output, err = json.MarshalIndent(response, "", "    "); err != nil {
 		panic(err)
 	}
+
 	return string(output), nil
 }

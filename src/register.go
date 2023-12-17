@@ -24,12 +24,18 @@ func register() ([]byte, string, error) {
 			V6 string `json:"v6"`
 		} `json:"addresses"`
 	}
-	privateKey, publicKey, err := GenerateKey()
-	if err != nil {
+	var err error
+	var output, body, store []byte
+	var response Response
+	var publicKey, privateKey string
+
+	if privateKey, publicKey, err = GenerateKey(); err != nil {
 		panic(err)
 	}
+
 	installID := RandStringRunes(22, nil)
 	fcmtoken := RandStringRunes(134, nil)
+
 	payload := []byte(
 		`{
 			"key":"` + publicKey + `",
@@ -40,11 +46,11 @@ func register() ([]byte, string, error) {
 			"serial_number":"` + installID + `"
 		}`,
 	)
-	body, err := request(payload, "", "", "register")
-	if err != nil {
+
+	if body, err = request(payload, "", "", "register"); err != nil {
 		panic(err)
 	}
-	var response Response
+
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		panic(err)
@@ -83,13 +89,11 @@ func register() ([]byte, string, error) {
 		Addresses:   response.Config.Interface.Addresses,
 	}
 
-	output, err := json.MarshalIndent(jsonIn, "", "    ")
-	if err != nil {
+	if output, err = json.MarshalIndent(jsonIn, "", "    "); err != nil {
 		panic(err)
 	}
 
-	store, err := json.MarshalIndent(response, "", "    ")
-	if err != nil {
+	if store, err = json.MarshalIndent(response, "", "    "); err != nil {
 		panic(err)
 	}
 

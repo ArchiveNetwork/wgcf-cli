@@ -7,25 +7,23 @@ import (
 )
 
 func readConfigFile(filePath string) (string, string, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
+	var file *os.File
+	var err error
+	var content []byte
+	if file, err = os.Open(filePath); err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	content, err := io.ReadAll(file)
-	if err != nil {
+	if content, err = io.ReadAll(file); err != nil {
 		panic(err)
 	}
 
 	var ReadedFile Response
-	err = json.Unmarshal(content, &ReadedFile)
-	if err != nil {
+
+	if err = json.Unmarshal(content, &ReadedFile); err != nil {
 		panic(err)
 	}
 
-	token := ReadedFile.Token
-	id := ReadedFile.ID
-
-	return token, id, nil
+	return ReadedFile.Token, ReadedFile.ID, nil
 }

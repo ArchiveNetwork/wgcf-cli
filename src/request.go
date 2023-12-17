@@ -27,6 +27,10 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 		url = "https://api.cloudflareclient.com/v0a2158/reg/" + id
 		method = "DELETE"
 	}
+	var body []byte
+	var request *http.Request
+	var response *http.Response
+	var err error
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -36,9 +40,8 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 			},
 		},
 	}
-	request, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 
-	if err != nil {
+	if request, err = http.NewRequest(method, url, bytes.NewBuffer(payload)); err != nil {
 		panic(err)
 	}
 	request.Header.Add("CF-Client-Version", "a-7.21-0721")
@@ -47,26 +50,23 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 		request.Header.Add("Authorization", "Bearer "+token)
 	}
 
-	response, err := client.Do(request)
-	if err != nil {
+	if response, err = client.Do(request); err != nil {
 		panic(err)
 	}
 	defer response.Body.Close()
 
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
+	if body, err = io.ReadAll(response.Body); err != nil {
 		panic(err)
 	}
 
-	statusCode := response.StatusCode
-	if statusCode != 204 && statusCode != 200 {
+	if response.StatusCode != 204 && response.StatusCode != 200 {
 		var prettyJSON bytes.Buffer
 		err := json.Indent(&prettyJSON, body, "", "  ")
 		if err != nil {
 			panic(err)
 		}
 		fmt.Println(prettyJSON.String())
-		panic("REST API returned " + fmt.Sprint(statusCode) + " " + http.StatusText(statusCode))
+		panic("REST API returned " + fmt.Sprint(response.StatusCode) + " " + http.StatusText(response.StatusCode))
 	}
 
 	return body, nil

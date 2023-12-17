@@ -7,29 +7,31 @@ import (
 )
 
 func editFile(filePath string, license string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
+	var file *os.File
+	var content []byte
+	var err error
+	var updatedContent []byte
+	if file, err = os.Open(filePath); err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	content, err := io.ReadAll(file)
-	if err != nil {
+	if content, err = io.ReadAll(file); err != nil {
 		panic(err)
 	}
 
 	var ReadedFile Response
-	err = json.Unmarshal(content, &ReadedFile)
-	if err != nil {
+
+	if err = json.Unmarshal(content, &ReadedFile); err != nil {
 		panic(err)
 	}
 	ReadedFile.Account.License = license
-	updatedContent, err := json.MarshalIndent(ReadedFile, "", "  ")
-	if err != nil {
+
+	if updatedContent, err = json.MarshalIndent(ReadedFile, "", "  "); err != nil {
 		panic(err)
 	}
-	err = os.WriteFile(filePath, updatedContent, 0600)
-	if err != nil {
+
+	if err = os.WriteFile(filePath, updatedContent, 0600); err != nil {
 		panic(err)
 	}
 

@@ -17,21 +17,23 @@ func changeName(token string, id string, name string) (string, error) {
 		Role      string    `json:"role"`
 	}
 	var response []Device
+	var err error
+	var body, output []byte
 	payload := []byte(
 		`{
 			"name":"` + name + `"
 		 }`,
 	)
-	body, err := request(payload, token, id, "name")
-	if err != nil {
+
+	if body, err = request(payload, token, id, "name"); err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal(body, &response)
-	if err != nil {
+
+	if err = json.Unmarshal(body, &response); err != nil {
 		panic(err)
 	}
-	output, err := json.MarshalIndent(response, "", "    ")
-	if err != nil {
+
+	if output, err = json.MarshalIndent(response, "", "    "); err != nil {
 		panic(err)
 	}
 	return string(output), nil

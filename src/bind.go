@@ -17,17 +17,18 @@ func getBindingDevices(token string, id string) (string, error) {
 		Role      string    `json:"role"`
 	}
 	var response []Device
+	var body []byte
+	var output []byte
+	var err error
 
-	body, err := request([]byte(``), token, id, "bind")
-	if err != nil {
+	if body, err = request([]byte(``), token, id, "bind"); err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal(body, &response)
-	if err != nil {
+	if err := json.Unmarshal(body, &response); err != nil {
 		panic(err)
 	}
-	output, err := json.MarshalIndent(response, "", "    ")
-	if err != nil {
+
+	if output, err = json.MarshalIndent(response, "", "    "); err != nil {
 		panic(err)
 	}
 	return string(output), nil

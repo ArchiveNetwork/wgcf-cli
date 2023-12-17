@@ -17,22 +17,25 @@ func changeLicense(token string, id string, license string) (string, error) {
 		ReferralRenewalCountdown int       `json:"referral_renewal_countdown"`
 		Role                     string    `json:"role"`
 	}
+	var body []byte
+	var err error
+	var output []byte
 	var response LicenseResponse
 	payload := []byte(
 		`{
 			"license":"` + license + `"
 		 }`,
 	)
-	body, err := request(payload, token, id, "license")
-	if err != nil {
+
+	if body, err = request(payload, token, id, "license"); err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal(body, &response)
-	if err != nil {
+
+	if err = json.Unmarshal(body, &response); err != nil {
 		panic(err)
 	}
-	output, err := json.MarshalIndent(response, "", "    ")
-	if err != nil {
+
+	if output, err = json.MarshalIndent(response, "", "    "); err != nil {
 		panic(err)
 	}
 	return string(output), nil

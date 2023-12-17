@@ -66,6 +66,9 @@ type Response struct {
 
 func main() {
 	action := ParseCommandLine()
+	var err error
+	var store []byte
+	var config, token, id, reserved, output string
 
 	if len(os.Args) == 1 {
 		flag.Usage()
@@ -78,14 +81,13 @@ func main() {
 	}
 
 	if action.Register {
-		store, output, err := register()
-		if err != nil {
+
+		if store, output, err = register(); err != nil {
 			panic(err)
 		}
 		fmt.Println(output)
 		if action.FileName != "" {
-			err = os.WriteFile(action.FileName, store, 0600)
-			if err != nil {
+			if err = os.WriteFile(action.FileName, store, 0600); err != nil {
 				panic(err)
 			}
 			return
@@ -152,18 +154,15 @@ func main() {
 	}
 
 	if action.Cancle {
-		token, id, err := readConfigFile(action.FileName)
-		if err != nil {
+		if token, id, err = readConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 
-		err = cancleAccount(token, id)
-		if err != nil {
+		if err = cancleAccount(token, id); err != nil {
 			panic(err)
 		}
 
-		err = os.Remove(action.FileName)
-		if err != nil {
+		if err = os.Remove(action.FileName); err != nil {
 			panic(err)
 		}
 		fmt.Println("Cancled")
@@ -171,19 +170,16 @@ func main() {
 	}
 
 	if action.License != "" {
-		token, id, err := readConfigFile(action.FileName)
-		if err != nil {
+		if token, id, err = readConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 
-		output, err := changeLicense(token, id, action.License)
-		if err != nil {
+		if output, err = changeLicense(token, id, action.License); err != nil {
 			panic(err)
 		}
 		fmt.Println(output)
 
-		err = editFile(action.FileName, action.License)
-		if err != nil {
+		if err = editFile(action.FileName, action.License); err != nil {
 			panic(err)
 		}
 		return
@@ -194,13 +190,12 @@ func main() {
 		panic(err)
 	}
 	if action.Name != "" {
-		token, id, err := readConfigFile(action.FileName)
-		if err != nil {
+
+		if token, id, err = readConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 
-		output, err := changeName(token, id, action.Name)
-		if err != nil {
+		if output, err = changeName(token, id, action.Name); err != nil {
 			panic(err)
 		}
 		fmt.Println(output)
@@ -212,39 +207,37 @@ func main() {
 		panic(err)
 	}
 	if action.Generate != "" && action.Generate == "wg" {
-		config, reserved, err := configGenerate("wireguard", action.FileName)
-		if err != nil {
+		if config, reserved, err = configGenerate("wireguard", action.FileName); err != nil {
 			panic(err)
 		}
-		err = os.WriteFile(action.FileName+".wgcf.conf", []byte(config), 0600)
-		if err != nil {
+
+		if err = os.WriteFile(action.FileName+".wgcf.conf", []byte(config), 0600); err != nil {
 			panic(err)
 		}
-		output, err := nftConfigGenerate(reserved)
-		if err != nil {
+
+		if output, err = nftConfigGenerate(reserved); err != nil {
 			panic(err)
 		}
-		err = os.WriteFile("wgcf.nft.conf", []byte(output), 0600)
-		if err != nil {
+
+		if err = os.WriteFile("wgcf.nft.conf", []byte(output), 0600); err != nil {
 			panic(err)
 		}
 	} else if action.Generate != "" && action.Generate == "xray" {
-		config, _, err := configGenerate("xray", action.FileName)
-		if err != nil {
+		if config, _, err = configGenerate("xray", action.FileName); err != nil {
 			panic(err)
 		}
-		err = os.WriteFile(action.FileName+".xray.json", []byte(config), 0600)
-		if err != nil {
+
+		if err = os.WriteFile(action.FileName+".xray.json", []byte(config), 0600); err != nil {
 			panic(err)
 		}
 		return
 	} else if action.Generate != "" && action.Generate == "sing-box" {
-		config, _, err := configGenerate("sing-box", action.FileName)
-		if err != nil {
+
+		if config, _, err = configGenerate("sing-box", action.FileName); err != nil {
 			panic(err)
 		}
-		err = os.WriteFile(action.FileName+".sing-box.json", []byte(config), 0600)
-		if err != nil {
+
+		if err = os.WriteFile(action.FileName+".sing-box.json", []byte(config), 0600); err != nil {
 			panic(err)
 		}
 		return
