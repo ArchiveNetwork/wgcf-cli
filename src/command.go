@@ -107,14 +107,14 @@ func help() {
 	fmt.Fprintf(os.Stderr,
 		`wg-cli Revision: __REVISION__
 Usage:	%s [Options]
-Options:		-h/--help			help
-			-f/--file [string]		Configuration file (default "wgcf.json")
-			-r/--register			Register an account
-			-b/--bind			Get the account binding devices
-			-n/--name [string]		Change the device name
-			-l/--license [string]		Change the license
-			-u/--unbind			Unbind a device from the account
-			-c/--cancle			Cancle the account
-			-g/--generate [wg/xray]		Generate a [wg/xray] configuration file
+Options:		-h/--help			 help
+			-f/--file [string]		 Configuration file (default "wgcf.json")
+			-r/--register			 Register an account
+			-b/--bind			 Get the account binding devices
+			-n/--name [string]		 Change the device name
+			-l/--license [string]		 Change the license
+			-u/--unbind			 Unbind a device from the account
+			-c/--cancle			 Cancle the account
+			-g/--generate [sing-box/wg/xray] Generate a [sing-box/wg/xray] configuration file
 `, os.Args[0])
 }
