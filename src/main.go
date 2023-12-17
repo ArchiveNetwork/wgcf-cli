@@ -135,7 +135,12 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		if err = updateConfigFile(action.FileName); err != nil {
+			panic(err)
+		}
 		fmt.Println(output)
+
 		return
 	}
 
@@ -149,6 +154,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		if err = updateConfigFile(action.FileName); err != nil {
+			panic(err)
+		}
+
 		fmt.Println(output)
 		return
 	}
@@ -177,11 +187,12 @@ func main() {
 		if output, err = changeLicense(token, id, action.License); err != nil {
 			panic(err)
 		}
-		fmt.Println(output)
 
-		if err = editFile(action.FileName, action.License); err != nil {
+		if err = updateConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
+
+		fmt.Println(output)
 		return
 	}
 
@@ -196,6 +207,10 @@ func main() {
 		}
 
 		if output, err = changeName(token, id, action.Name); err != nil {
+			panic(err)
+		}
+
+		if err = updateConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 		fmt.Println(output)

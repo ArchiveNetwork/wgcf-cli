@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-  push:
-    branches:
-      - master
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/build.yml"
+#  push:
+#    branches:
+#      - master
+#    paths:
+#      - "**/*.go"
+#      - "go.mod"
+#      - "go.sum"
+#      - ".github/workflows/build.yml"
   pull_request:
     types: [opened, synchronize, reopened]
     paths:

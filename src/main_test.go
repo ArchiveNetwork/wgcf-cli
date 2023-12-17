@@ -112,10 +112,6 @@ func TestMain(m *testing.M) {
 	}
 	fmt.Println(output)
 
-	if err = editFile(action.FileName, action.License); err != nil {
-		panic(err)
-	}
-
 	if output, err = changeName(token, id, action.Name); err != nil {
 		panic(err)
 	}

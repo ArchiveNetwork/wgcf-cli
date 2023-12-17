@@ -51,8 +51,7 @@ func register() ([]byte, string, error) {
 		panic(err)
 	}
 
-	err = json.Unmarshal(body, &response)
-	if err != nil {
+	if err = json.Unmarshal(body, &response); err != nil {
 		panic(err)
 	}
 
