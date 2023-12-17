@@ -39,5 +39,4 @@ jobs:
 
       - name: Test
         run: |
-          echo '${{secrets.CONFIG_FILE}}' > ./src/wgcf.json
           go test -timeout 5m -v ./...

@@ -38,6 +38,14 @@ func TestMain(m *testing.M) {
 	var err error
 
 	action.FileName = "wgcf.json"
+	if store, output, err = register(); err != nil {
+		panic(err)
+	}
+	fmt.Println(output)
+
+	if err = os.WriteFile(action.FileName, store, 0600); err != nil {
+		panic(err)
+	}
 
 	if store, output, err = register(); err != nil {
 		panic(err)
@@ -114,6 +122,15 @@ func TestMain(m *testing.M) {
 	fmt.Println(output)
 
 	if token, id, err = readConfigFile("test.json"); err != nil {
+		panic(err)
+	}
+
+	if err = cancleAccount(token, id); err != nil {
+		panic(err)
+	}
+	fmt.Println("Cancled")
+
+	if token, id, err = readConfigFile(action.FileName); err != nil {
 		panic(err)
 	}
 
