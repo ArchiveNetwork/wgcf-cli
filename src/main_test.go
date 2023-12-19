@@ -22,7 +22,7 @@ func readLicense(filePath string) (string, error) {
 		panic(err)
 	}
 
-	var ReadedFile Response
+	var ReadedFile NormalResponse
 	err = json.Unmarshal(content, &ReadedFile)
 	if err != nil {
 		panic(err)
@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 	var err error
 
 	action.FileName = "wgcf.json"
-	if store, output, err = register(); err != nil {
+	if store, output, err = register(""); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
@@ -47,7 +47,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if store, output, err = register(); err != nil {
+	if store, output, err = register(""); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)

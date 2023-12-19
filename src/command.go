@@ -8,15 +8,16 @@ import (
 )
 
 type Actions struct {
-	Help     bool
-	Register bool
-	Bind     bool
-	UnBind   bool
-	Cancle   bool
-	License  string
-	FileName string
-	Name     string
-	Generate string
+	Help      bool
+	Register  bool
+	TeamToken string
+	Bind      bool
+	UnBind    bool
+	Cancle    bool
+	License   string
+	FileName  string
+	Name      string
+	Generate  string
 }
 
 func ParseCommandLine() Actions {
@@ -27,6 +28,9 @@ func ParseCommandLine() Actions {
 
 	flag.BoolVar(&action.Register, "r", false, "")
 	flag.BoolVar(&action.Register, "register", false, "")
+
+	flag.StringVar(&action.TeamToken, "t", "", "")
+	flag.StringVar(&action.TeamToken, "token", "", "")
 
 	flag.BoolVar(&action.Bind, "b", false, "")
 	flag.BoolVar(&action.Bind, "bind", false, "")
@@ -56,6 +60,9 @@ func ParseCommandLine() Actions {
 			}
 			if f.Name == "r" || f.Name == "register" {
 				action.Register = true
+			}
+			if f.Name == "t" || f.Name == "token" {
+				action.TeamToken = f.Value.String()
 			}
 			if f.Name == "b" || f.Name == "bind" {
 				action.Bind = true
@@ -109,6 +116,7 @@ Usage:	%s [Options]
 Options:    -h/--help                             Show help
             -f/--file [string]                    Configuration file (default "wgcf.json")
             -r/--register                         Register an account
+			-t/--token [string]                   Team token (must be used with -r/--register)
             -b/--bind                             Get the account binding devices
             -n/--name [string]                    Change the device name
             -l/--license [string]                 Change the license

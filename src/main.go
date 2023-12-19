@@ -7,63 +7,6 @@ import (
 	"strings"
 )
 
-type Response struct {
-	ID      string `json:"id"`
-	Type    string `json:"type"`
-	Model   string `json:"model"`
-	Name    string `json:"name"`
-	Key     string `json:"key"`
-	Account struct {
-		ID                   string `json:"id"`
-		PrivateKey           string `json:"private_key"`
-		ReservedHex          string `json:"reserved_hex"`
-		ReservedDec          []int  `json:"reserved_dec"`
-		AccountType          string `json:"account_type"`
-		Created              string `json:"created"`
-		Updated              string `json:"updated"`
-		PremiumData          int    `json:"premium_data"`
-		Quota                int    `json:"quota"`
-		Usage                int    `json:"usage"`
-		WarpPlus             bool   `json:"warp_plus"`
-		ReferralCount        int    `json:"referral_count"`
-		ReferralRenewalCount int    `json:"referral_renewal_countdown"`
-		Role                 string `json:"role"`
-		License              string `json:"license"`
-	} `json:"account"`
-	Config struct {
-		ClientID string `json:"client_id"`
-		Peers    []struct {
-			PublicKey string `json:"public_key"`
-			Endpoint  struct {
-				V4   string `json:"v4"`
-				V6   string `json:"v6"`
-				Host string `json:"host"`
-			} `json:"endpoint"`
-		} `json:"peers"`
-		Interface struct {
-			Addresses struct {
-				V4 string `json:"v4"`
-				V6 string `json:"v6"`
-			} `json:"addresses"`
-		} `json:"interface"`
-		Services struct {
-			HTTPProxy string `json:"http_proxy"`
-		} `json:"services"`
-	} `json:"config"`
-	Token     string `json:"token"`
-	Warp      bool   `json:"warp_enabled"`
-	Waitlist  bool   `json:"waitlist_enabled"`
-	Created   string `json:"created"`
-	Updated   string `json:"updated"`
-	TOS       string `json:"tos"`
-	Place     int    `json:"place"`
-	Locale    string `json:"locale"`
-	Enabled   bool   `json:"enabled"`
-	InstallID string `json:"install_id"`
-	FCMToken  string `json:"fcm_token"`
-	SerialNum string `json:"serial_number"`
-}
-
 func main() {
 	action := ParseCommandLine()
 	var err error
@@ -79,11 +22,19 @@ func main() {
 		help()
 		return
 	}
-
 	if action.Register {
-
-		if store, output, err = register(); err != nil {
+		if strings.HasPrefix(action.TeamToken, "-") {
+			err := fmt.Sprintln("The parameter must not start with '-'")
 			panic(err)
+		}
+		if action.TeamToken != "" {
+			if store, output, err = register(action.TeamToken); err != nil {
+				panic(err)
+			}
+		} else {
+			if store, output, err = register(""); err != nil {
+				panic(err)
+			}
 		}
 		fmt.Println(output)
 		if action.FileName != "" {
@@ -111,6 +62,14 @@ func main() {
 			}
 			return
 		}
+	}
+
+	if strings.HasPrefix(action.TeamToken, "-") {
+		err := fmt.Sprintln("The parameter must not start with '-'")
+		panic(err)
+	}
+	if action.TeamToken != "" {
+		panic(`You need to use this parameter with "-r/--register"`)
 	}
 
 	if action.FileName == "" {

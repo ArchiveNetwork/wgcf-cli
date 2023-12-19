@@ -11,6 +11,7 @@ import (
 
 func request(payload []byte, token string, id string, action string) ([]byte, error) {
 	var url, method string
+	var teamToken string
 	if action == "register" {
 		url = "https://api.cloudflareclient.com/v0a2158/reg"
 		method = "POST"
@@ -26,6 +27,11 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 	} else if action == "cancle" {
 		url = "https://api.cloudflareclient.com/v0a2158/reg/" + id
 		method = "DELETE"
+	} else if action == "registerTeam" {
+		url = "https://api.cloudflareclient.com/v0a2158/reg"
+		method = "POST"
+		teamToken = token
+		token = ""
 	}
 	var body []byte
 	var request *http.Request
@@ -48,6 +54,9 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 	request.Header.Add("User-Agent", "okhttp/0.7.21")
 	if token != "" {
 		request.Header.Add("Authorization", "Bearer "+token)
+	}
+	if teamToken != "" {
+		request.Header.Add("Cf-Access-Jwt-Assertion", teamToken)
 	}
 
 	if response, err = client.Do(request); err != nil {
