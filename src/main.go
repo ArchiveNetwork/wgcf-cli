@@ -24,7 +24,7 @@ func main() {
 	}
 	if action.Register {
 		if strings.HasPrefix(action.TeamToken, "-") {
-			err := fmt.Sprintln("The parameter must not start with '-'")
+			err := fmt.Sprintln(`The parameter must not start with "-"`)
 			panic(err)
 		}
 		if action.TeamToken != "" {
@@ -65,8 +65,7 @@ func main() {
 	}
 
 	if strings.HasPrefix(action.TeamToken, "-") {
-		err := fmt.Sprintln("The parameter must not start with '-'")
-		panic(err)
+		panic(`The parameter must not start with "-"`)
 	}
 	if action.TeamToken != "" {
 		panic(`You need to use this parameter with "-r/--register"`)
@@ -75,13 +74,11 @@ func main() {
 	if action.FileName == "" {
 		action.FileName = "wgcf.json"
 	} else if strings.HasPrefix(action.FileName, "-") {
-		err := fmt.Sprintln("The parameter must not start with '-'")
-		panic(err)
+		panic(`The parameter must not start with "-"`)
 	}
 
 	if !action.Bind && !action.UnBind && !action.Cancle && action.License == "" && action.Name == "" && action.Generate == "" {
-		err := fmt.Sprintln("You need to specify an action")
-		panic(err)
+		panic("You need to specify an action")
 	}
 
 	if action.Bind {
@@ -156,8 +153,7 @@ func main() {
 	}
 
 	if strings.HasPrefix(action.Name, "-") {
-		err := fmt.Sprintln("The parameter must not start with '-'")
-		panic(err)
+		panic(`The parameter must not start with "-"`)
 	}
 	if action.Name != "" {
 
@@ -177,8 +173,7 @@ func main() {
 	}
 
 	if strings.HasPrefix(action.Generate, "-") {
-		err := fmt.Sprintln("The parameter must not start with '-'")
-		panic(err)
+		panic(`The parameter must not start with "-"`)
 	}
 	if action.Generate != "" && action.Generate == "wg" {
 		if config, reserved, err = configGenerate("wireguard", action.FileName); err != nil {
@@ -206,7 +201,6 @@ func main() {
 		}
 		return
 	} else if action.Generate != "" && action.Generate == "sing-box" {
-
 		if config, _, err = configGenerate("sing-box", action.FileName); err != nil {
 			panic(err)
 		}

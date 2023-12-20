@@ -87,7 +87,7 @@ func configGenerate(generateType string, filePath string) (string, string, error
 				Reserved []int `json:"reserved"`
 				MTU      int   `json:"mtu"`
 			}{
-				SecretKey: ReadedFile.Account.PrivateKey,
+				SecretKey: ReadedFile.Config.PrivateKey,
 				Address:   []string{"172.16.0.2/32", ReadedFile.Config.Interface.Addresses.V6 + "/128"},
 				Peers: []struct {
 					PublicKey  string   `json:"publicKey"`
@@ -100,7 +100,7 @@ func configGenerate(generateType string, filePath string) (string, string, error
 						Endpoint:   "162.159.192.1:2408",
 					},
 				},
-				Reserved: ReadedFile.Account.ReservedDec,
+				Reserved: ReadedFile.Config.ReservedDec,
 				MTU:      1280,
 			},
 			Tag: "wireguard",
@@ -113,7 +113,7 @@ func configGenerate(generateType string, filePath string) (string, string, error
 
 	} else if generateType == "wireguard" {
 		input := Wireguard{
-			Reserved: ReadedFile.Account.ReservedHex,
+			Reserved: ReadedFile.Config.ReservedHex,
 			Interface: struct {
 				PrivateKey string   `conf:"PrivateKey"`
 				Address    []string `conf:"Address"`
@@ -123,7 +123,7 @@ func configGenerate(generateType string, filePath string) (string, string, error
 				Table      int      `conf:"Table"`
 				PreUp      []string `conf:"PreUp"`
 			}{
-				PrivateKey: ReadedFile.Account.PrivateKey,
+				PrivateKey: ReadedFile.Config.PrivateKey,
 				Address:    []string{ReadedFile.Config.Interface.Addresses.V6 + "/128", "172.16.0.2/32"},
 				MTU:        1280,
 				PostUp:     "nft -f /etc/wireguard/wgcf.nft.conf",
@@ -184,7 +184,7 @@ Endpoint = %s`,
 			Server:        "engage.cloudflareclient.com",
 			ServerPort:    2408,
 			LocalAddress:  []string{ReadedFile.Config.Interface.Addresses.V4 + "/32", ReadedFile.Config.Interface.Addresses.V6 + "/128"},
-			PrivateKey:    ReadedFile.Account.PrivateKey,
+			PrivateKey:    ReadedFile.Config.PrivateKey,
 			PeerPublicKey: "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
 			Reserved:      ReadedFile.Config.ClientID,
 			MTU:           1280,

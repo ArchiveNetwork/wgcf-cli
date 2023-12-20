@@ -66,7 +66,7 @@ func register(teamToken string) ([]byte, string, error) {
 				}
 
 				clientID := response.Config.ClientID
-				response.Account.PrivateKey = privateKey
+				response.Config.PrivateKey = privateKey
 				decoded, err := base64.StdEncoding.DecodeString(clientID)
 				if err != nil {
 					panic(err)
@@ -80,8 +80,8 @@ func register(teamToken string) ([]byte, string, error) {
 					reserved = append(reserved, int(decValue))
 				}
 
-				response.Account.ReservedDec = reserved
-				response.Account.ReservedHex = "0x" + hexString
+				response.Config.ReservedDec = reserved
+				response.Config.ReservedHex = "0x" + hexString
 				jsonIn := RegisterOutput{
 					Endpoint: struct {
 						V4 string `json:"v4"`
@@ -91,8 +91,8 @@ func register(teamToken string) ([]byte, string, error) {
 						V6: response.Config.Peers[0].Endpoint.V6,
 					},
 					ReservedStr: response.Config.ClientID,
-					ReservedHex: response.Account.ReservedHex,
-					ReservedDec: response.Account.ReservedDec,
+					ReservedHex: response.Config.ReservedHex,
+					ReservedDec: response.Config.ReservedDec,
 					PrivateKey:  privateKey,
 					PublicKey:   response.Config.Peers[0].PublicKey,
 					Addresses:   response.Config.Interface.Addresses,
@@ -117,7 +117,7 @@ func register(teamToken string) ([]byte, string, error) {
 			}
 
 			clientID := response.Config.ClientID
-			response.Account.PrivateKey = privateKey
+			response.Config.PrivateKey = privateKey
 			decoded, err := base64.StdEncoding.DecodeString(clientID)
 			if err != nil {
 				panic(err)
@@ -131,8 +131,8 @@ func register(teamToken string) ([]byte, string, error) {
 				reserved = append(reserved, int(decValue))
 			}
 
-			response.Account.ReservedDec = reserved
-			response.Account.ReservedHex = "0x" + hexString
+			response.Config.ReservedDec = reserved
+			response.Config.ReservedHex = "0x" + hexString
 			jsonIn := RegisterOutput{
 				Endpoint: struct {
 					V4 string `json:"v4"`
@@ -142,8 +142,8 @@ func register(teamToken string) ([]byte, string, error) {
 					V6: response.Config.Peers[0].Endpoint.V6,
 				},
 				ReservedStr: response.Config.ClientID,
-				ReservedHex: response.Account.ReservedHex,
-				ReservedDec: response.Account.ReservedDec,
+				ReservedHex: response.Config.ReservedHex,
+				ReservedDec: response.Config.ReservedDec,
 				PrivateKey:  privateKey,
 				PublicKey:   response.Config.Peers[0].PublicKey,
 				Addresses:   response.Config.Interface.Addresses,

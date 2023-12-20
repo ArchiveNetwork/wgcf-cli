@@ -39,7 +39,7 @@ func updateConfigFile(filePath string) error {
 					panic(err)
 				}
 				defer file.Close()
-				if ReadedFile.Account.ReservedDec == nil || ReadedFile.Account.ReservedHex == "" {
+				if ReadedFile.Config.ReservedDec == nil || ReadedFile.Config.ReservedHex == "" {
 					clientID := ReadedFile.Config.ClientID
 					decoded, err := base64.StdEncoding.DecodeString(clientID)
 					if err != nil {
@@ -54,8 +54,8 @@ func updateConfigFile(filePath string) error {
 						reserved = append(reserved, int(decValue))
 					}
 
-					ReadedFile.Account.ReservedDec = reserved
-					ReadedFile.Account.ReservedHex = "0x" + hexString
+					ReadedFile.Config.ReservedDec = reserved
+					ReadedFile.Config.ReservedHex = "0x" + hexString
 				}
 
 				client = &http.Client{
@@ -92,11 +92,14 @@ func updateConfigFile(filePath string) error {
 				if err = json.Unmarshal(body, &responseBody); err != nil {
 					panic(err)
 				}
-				responseBody.Account.ReservedDec = ReadedFile.Account.ReservedDec
-				responseBody.Account.ReservedHex = ReadedFile.Account.ReservedHex
-				responseBody.Account.PrivateKey = ReadedFile.Account.PrivateKey
+				if ReadedFile.Account.PrivateKey != "" {
+					responseBody.Config.PrivateKey = ReadedFile.Account.PrivateKey
+				} else {
+					responseBody.Config.PrivateKey = ReadedFile.Config.PrivateKey
+				}
+				responseBody.Config.ReservedDec = ReadedFile.Config.ReservedDec
+				responseBody.Config.ReservedHex = ReadedFile.Config.ReservedHex
 				responseBody.Token = ReadedFile.Token
-
 				if updatedContent, err = json.MarshalIndent(responseBody, "", "    "); err != nil {
 					panic(err)
 				}
@@ -120,7 +123,7 @@ func updateConfigFile(filePath string) error {
 				panic(err)
 			}
 			defer file.Close()
-			if ReadedFile.Account.ReservedDec == nil || ReadedFile.Account.ReservedHex == "" {
+			if ReadedFile.Config.ReservedDec == nil || ReadedFile.Config.ReservedHex == "" {
 				clientID := ReadedFile.Config.ClientID
 				decoded, err := base64.StdEncoding.DecodeString(clientID)
 				if err != nil {
@@ -135,8 +138,8 @@ func updateConfigFile(filePath string) error {
 					reserved = append(reserved, int(decValue))
 				}
 
-				ReadedFile.Account.ReservedDec = reserved
-				ReadedFile.Account.ReservedHex = "0x" + hexString
+				ReadedFile.Config.ReservedDec = reserved
+				ReadedFile.Config.ReservedHex = "0x" + hexString
 			}
 
 			client = &http.Client{
@@ -173,9 +176,14 @@ func updateConfigFile(filePath string) error {
 			if err = json.Unmarshal(body, &responseBody); err != nil {
 				panic(err)
 			}
-			responseBody.Account.ReservedDec = ReadedFile.Account.ReservedDec
-			responseBody.Account.ReservedHex = ReadedFile.Account.ReservedHex
-			responseBody.Account.PrivateKey = ReadedFile.Account.PrivateKey
+
+			if ReadedFile.Account.PrivateKey != "" {
+				responseBody.Config.PrivateKey = ReadedFile.Account.PrivateKey
+			} else {
+				responseBody.Config.PrivateKey = ReadedFile.Config.PrivateKey
+			}
+			responseBody.Config.ReservedDec = ReadedFile.Config.ReservedDec
+			responseBody.Config.ReservedHex = ReadedFile.Config.ReservedHex
 			responseBody.InstallID = ReadedFile.InstallID
 			responseBody.Token = ReadedFile.Token
 

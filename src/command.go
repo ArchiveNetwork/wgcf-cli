@@ -116,7 +116,7 @@ Usage:	%s [Options]
 Options:    -h/--help                             Show help
             -f/--file [string]                    Configuration file (default "wgcf.json")
             -r/--register                         Register an account
-			-t/--token [string]                   Team token (must be used with -r/--register)
+            -t/--token [string]                   Team token (must be used with -r/--register)
             -b/--bind                             Get the account binding devices
             -n/--name [string]                    Change the device name
             -l/--license [string]                 Change the license

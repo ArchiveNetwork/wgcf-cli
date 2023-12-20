@@ -12,9 +12,7 @@ type NormalResponse struct {
 	Key     string `json:"key"`
 	Account struct {
 		ID                   string `json:"id"`
-		PrivateKey           string `json:"private_key"`
-		ReservedHex          string `json:"reserved_hex"`
-		ReservedDec          []int  `json:"reserved_dec"`
+		PrivateKey           string `json:"private_key,omitempty"`
 		AccountType          string `json:"account_type"`
 		Created              string `json:"created"`
 		Updated              string `json:"updated"`
@@ -28,8 +26,11 @@ type NormalResponse struct {
 		License              string `json:"license"`
 	} `json:"account"`
 	Config struct {
-		ClientID string `json:"client_id"`
-		Peers    []struct {
+		ClientID    string `json:"client_id"`
+		ReservedHex string `json:"reserved_hex"`
+		ReservedDec []int  `json:"reserved_dec"`
+		PrivateKey  string `json:"private_key"`
+		Peers       []struct {
 			PublicKey string `json:"public_key"`
 			Endpoint  struct {
 				V4   string `json:"v4"`
@@ -71,9 +72,7 @@ type TeamResponse struct {
 	Name    string `json:"name"`
 	Account struct {
 		ID           string `json:"id"`
-		PrivateKey   string `json:"private_key"`
-		ReservedHex  string `json:"reserved_hex"`
-		ReservedDec  []int  `json:"reserved_dec"`
+		PrivateKey   string `json:"private_key,omitempty"`
 		AccountType  string `json:"account_type"`
 		Managed      string `json:"managed"`
 		Organization string `json:"organization"`
@@ -104,8 +103,11 @@ type TeamResponse struct {
 	Updated  string `json:"updated"`
 	FcmToken string `json:"fcm_token"`
 	Config   struct {
-		ClientID string `json:"client_id"`
-		Peers    []struct {
+		ClientID    string `json:"client_id"`
+		ReservedHex string `json:"reserved_hex"`
+		ReservedDec []int  `json:"reserved_dec"`
+		PrivateKey  string `json:"private_key"`
+		Peers       []struct {
 			PublicKey string `json:"public_key"`
 			Endpoint  struct {
 				V4   string `json:"v4"`

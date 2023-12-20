@@ -1,34 +1,22 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"time"
 )
 
 func getBindingDevices(token string, id string) (string, error) {
-	type Device struct {
-		ID        string    `json:"id"`
-		Type      string    `json:"type"`
-		Model     string    `json:"model"`
-		Name      string    `json:"name,omitempty"`
-		Created   time.Time `json:"created"`
-		Activated time.Time `json:"activated"`
-		Active    bool      `json:"active"`
-		Role      string    `json:"role"`
-	}
-	var response []Device
-	var body []byte
-	var output []byte
+	var body, output []byte
+	var prettyJSON bytes.Buffer
 	var err error
 
 	if body, err = request([]byte(``), token, id, "bind"); err != nil {
 		panic(err)
 	}
-	if err := json.Unmarshal(body, &response); err != nil {
-		panic(err)
-	}
 
-	if output, err = json.MarshalIndent(response, "", "    "); err != nil {
+	if err = json.Indent(&prettyJSON, body, "", "    "); err == nil {
+		output = prettyJSON.Bytes()
+	} else {
 		panic(err)
 	}
 	return string(output), nil

@@ -1,6 +1,10 @@
 # wgcf-cli
 Use the standard library to access cloudflare-warp api.<br>
-Thanks: [@badafans](https://github.com/badafans), [badafans/warp-reg](https://github.com/badafans/warp-reg)<br>
+Thanks: [@fscarmen](https://github.com/fscarmen/), [fscarmen/warp](https://gitlab.com/fscarmen/warp/), [@badafans](https://github.com/badafans), [badafans/warp-reg](https://github.com/badafans/warp-reg)<br>
+## Install
+```bash
+bash -c "$(curl -L wgcf-cli.vercel.app)"
+```
 ## Example 
 1. Register
 ```console
@@ -27,7 +31,7 @@ Thanks: [@badafans](https://github.com/badafans), [badafans/warp-reg](https://gi
 ```
 2. Bind a License
 ```console
-❯ wgcf-cli -f wgcf.json -l 9zs5I61a-l9j8m7T5-4pC6k20X
+❯ wgcf-cli -l 9zs5I61a-l9j8m7T5-4pC6k20X
 {
     "id": "cd7f4695-e9ef-4bb0-b412-5f4d84919db7",
     "created": "0001-01-01T00:00:00Z",
@@ -39,10 +43,6 @@ Thanks: [@badafans](https://github.com/badafans), [badafans/warp-reg](https://gi
     "referral_renewal_countdown": 0,
     "role": "child"
 }
-```
-## Install
-```bash
-bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
 ## Build 
 ```bash
