@@ -4,7 +4,16 @@
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
-updates:
+updates:  
+  - package-ecosystem: "gomod"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+      timezone: "Asia/Shanghai"
+      time: "06:00"
+    pull-request-branch-name:
+      separator: "-"
+      
   - package-ecosystem: "github-actions"
     directory: "/.github"
     schedule:
