@@ -13,11 +13,12 @@ type Actions struct {
 	TeamToken string
 	Bind      bool
 	UnBind    bool
-	Cancle    bool
+	Cancel    bool
 	License   string
 	FileName  string
 	Name      string
 	Generate  string
+	Plus      bool
 }
 
 func ParseCommandLine() Actions {
@@ -38,8 +39,7 @@ func ParseCommandLine() Actions {
 	flag.BoolVar(&action.UnBind, "u", false, "")
 	flag.BoolVar(&action.UnBind, "unbind", false, "")
 
-	flag.BoolVar(&action.Cancle, "c", false, "")
-	flag.BoolVar(&action.Cancle, "cancle", false, "")
+	flag.BoolVar(&action.Cancel, "cancel", false, "")
 
 	flag.StringVar(&action.FileName, "f", "", "")
 	flag.StringVar(&action.FileName, "file", "", "")
@@ -52,6 +52,9 @@ func ParseCommandLine() Actions {
 
 	flag.StringVar(&action.Generate, "g", "", "")
 	flag.StringVar(&action.Generate, "generate", "", "")
+
+	flag.BoolVar(&action.Plus, "p", false, "")
+	flag.BoolVar(&action.Plus, "plus", false, "")
 
 	flag.Visit(
 		func(f *flag.Flag) {
@@ -70,9 +73,6 @@ func ParseCommandLine() Actions {
 			if f.Name == "u" || f.Name == "unbind" {
 				action.UnBind = true
 			}
-			if f.Name == "c" || f.Name == "cancle" {
-				action.Cancle = true
-			}
 			if f.Name == "f" || f.Name == "file" {
 				action.FileName = f.Value.String()
 			}
@@ -84,6 +84,9 @@ func ParseCommandLine() Actions {
 			}
 			if f.Name == "g" || f.Name == "generate" {
 				action.Generate = f.Value.String()
+			}
+			if f.Name == "p" || f.Name == "plus" {
+				action.Plus = true
 			}
 		},
 	)
@@ -121,7 +124,8 @@ Options:    -h/--help                             Show help
             -n/--name [string]                    Change the device name
             -l/--license [string]                 Change the license
             -u/--unbind                           Unbind a device from the account
-            -c/--cancle                           Cancle the account
             -g/--generate [sing-box/wg/xray]      Generate a [sing-box/wg/xray] configuration file
+            -p/--plus                             Recharge your account indefinitely.
+            --cancel                              Cancel the account
 `, os.Args[0])
 }

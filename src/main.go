@@ -77,7 +77,7 @@ func main() {
 		panic(`The parameter must not start with "-"`)
 	}
 
-	if !action.Bind && !action.UnBind && !action.Cancle && action.License == "" && action.Name == "" && action.Generate == "" {
+	if !action.Bind && !action.UnBind && !action.Cancel && action.License == "" && action.Name == "" && action.Generate == "" && !action.Plus {
 		panic("You need to specify an action")
 	}
 
@@ -119,7 +119,7 @@ func main() {
 		return
 	}
 
-	if action.Cancle {
+	if action.Cancel {
 		if token, id, err = readConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
@@ -206,6 +206,12 @@ func main() {
 		}
 
 		if err = os.WriteFile(action.FileName+".sing-box.json", []byte(config), 0600); err != nil {
+			panic(err)
+		}
+		return
+	}
+	if action.Plus {
+		if err = plus(action.FileName); err != nil {
 			panic(err)
 		}
 		return

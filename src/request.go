@@ -70,13 +70,13 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 
 	if response.StatusCode != 204 && response.StatusCode != 200 {
 		var prettyJSON bytes.Buffer
-		if err = json.Indent(&prettyJSON, body, "", "  "); err != nil {
+		if err = json.Indent(&prettyJSON, body, "", "    "); err != nil {
 			fmt.Println(string(body))
 		} else {
 			fmt.Println(prettyJSON.String())
 		}
-		panic("REST API returned " + fmt.Sprint(response.StatusCode) + " " + http.StatusText(response.StatusCode))
+		err = fmt.Errorf("REST API returned " + fmt.Sprint(response.StatusCode) + " " + http.StatusText(response.StatusCode))
 	}
 
-	return body, nil
+	return body, err
 }
