@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	U "net/url"
+	"os"
 )
 
 func request(payload []byte, token string, id string, action string) ([]byte, error) {
@@ -37,15 +39,30 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 	var request *http.Request
 	var response *http.Response
 	var err error
+	var proxy string
+	var proxyURL *U.URL
 
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				MinVersion: tls.VersionTLS12,
-				MaxVersion: tls.VersionTLS13,
-			},
+	httpProxy := os.Getenv("http_proxy")
+	httpsProxy := os.Getenv("https_proxy")
+	if httpProxy != "" {
+		proxy = httpProxy
+	} else if httpsProxy != "" {
+		proxy = httpsProxy
+	}
+	if proxyURL, err = U.Parse(proxy); err != nil {
+		panic("Error parsing proxy URL: " + err.Error())
+	}
+
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			MaxVersion: tls.VersionTLS13,
 		},
 	}
+	if proxy != "" {
+		transport.Proxy = http.ProxyURL(proxyURL)
+	}
+	client := &http.Client{Transport: transport}
 
 	if request, err = http.NewRequest(method, url, bytes.NewBuffer(payload)); err != nil {
 		panic(err)

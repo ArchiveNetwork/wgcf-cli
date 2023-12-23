@@ -109,7 +109,7 @@ func configGenerate(generateType string, filePath string) (string, string, error
 		if config, err = json.MarshalIndent(input, "", "    "); err != nil {
 			panic(err)
 		}
-		return string(config), "", nil
+		return fmt.Sprintf((string(config) + "\n")), "", nil
 
 	} else if generateType == "wireguard" {
 		input := Wireguard{
@@ -193,7 +193,7 @@ Endpoint = %s`,
 		if config, err = json.MarshalIndent(input, "", "    "); err != nil {
 			panic(err)
 		}
-		return string(config), "", nil
+		return fmt.Sprintf((string(config) + "\n")), "", nil
 	}
 	panic("unsupported generateType")
 }
