@@ -211,7 +211,7 @@ func main() {
 		return
 	}
 	if action.Plus {
-		if err = plus(action.FileName); err != nil {
+		if err = plus(action.FileName, 1); err != nil {
 			panic(err)
 		}
 		return
