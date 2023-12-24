@@ -67,7 +67,7 @@ func configGenerate(generateType string, filePath string) (string, string, error
 		panic(err)
 	}
 
-	var ReadedFile NormalResponse
+	var ReadedFile Response
 
 	if err = json.Unmarshal(content, &ReadedFile); err != nil {
 		panic(err)

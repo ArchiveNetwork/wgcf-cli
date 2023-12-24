@@ -1,4 +1,4 @@
-module github.com/chise0713/wgcf-cli
+module github.com/ArchiveNetwork/wgcf-cli
 
 go 1.21
 

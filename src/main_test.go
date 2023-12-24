@@ -22,7 +22,7 @@ func readLicense(filePath string) (string, error) {
 		panic(err)
 	}
 
-	var ReadedFile NormalResponse
+	var ReadedFile Response
 	err = json.Unmarshal(content, &ReadedFile)
 	if err != nil {
 		panic(err)

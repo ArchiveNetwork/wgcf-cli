@@ -131,7 +131,7 @@ func main() {
 		if err = os.Remove(action.FileName); err != nil {
 			panic(err)
 		}
-		fmt.Println("Cancled")
+		fmt.Println("Canceled")
 		return
 	}
 
