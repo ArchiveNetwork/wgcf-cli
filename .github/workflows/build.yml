@@ -65,10 +65,6 @@ jobs:
     steps:
       - name: Checkout codebase
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-        
-      - name: Set REVISION
-        run: |
-          sed -i "s/__REVISION__/$(git rev-parse HEAD)/g" src/command.go
 
       - name: Show workflow information 
         run: |
@@ -88,12 +84,14 @@ jobs:
       - name: Build
         run: |
           mkdir -p build_assets
-          go build -v -o build_assets/wgcf-cli -trimpath -ldflags "-s -w -buildid=" ./src
+          bash ./scripts/build.sh build
+          mv wgcf-cli build_assets/wgcf-cli
  
       - name: Build Mips softfloat
         if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
         run: |
-          GOMIPS=softfloat go build -v -o build_assets/wgcf-cli -trimpath -ldflags "-s -w -buildid=" ./src
+          GOMIPS=softfloat bash ./scripts/build.sh build
+          mv wgcf-cli build_assets/wgcf-cli
 
       - name: Rename Windows
         if: matrix.goos == 'windows'
@@ -116,8 +114,7 @@ jobs:
           popd || exit 1
           FILE=./wgcf-cli-${{ env.ASSET_NAME }}.zip
           DGST=$FILE.dgst
-          for METHOD in {"md5","sha1","sha256","sha512"}
-          do
+          for METHOD in {"md5","sha1","sha256","sha512"};do
             openssl dgst -$METHOD $FILE | sed 's/([^)]*)//g' >>$DGST
           done
 

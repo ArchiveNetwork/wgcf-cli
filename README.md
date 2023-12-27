@@ -1,11 +1,12 @@
 # wgcf-cli
-Use the standard library to access cloudflare-warp api.<br>
+Use the standard library to access Cloudflare-WARP api.<br>
 Thanks: [@fscarmen](https://github.com/fscarmen/), [fscarmen/warp](https://gitlab.com/fscarmen/warp/), [@badafans](https://github.com/badafans), [badafans/warp-reg](https://github.com/badafans/warp-reg)<br>
 ## Install
 - Install script supports `linux` / `macos` / `android(termux)`
 - It will install `wgcf-cli` to `$PREFIX/bin/`
+- Termux doesn't need manually set `$PREFIX`, it will use the default `$PREFIX`
 ```bash
-PREFIX=~/.local bash -c "$(curl -L wgcf-cli.vercel.app)"
+PREFIX="~/.local" bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
 - when without `$PREFIX`, you may need root privileges to run the script
 - It will install `wgcf-cli` to `/usr/local/bin/`
@@ -53,5 +54,5 @@ sudo bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
 ## Build 
 ```bash
-go build -trimpath -ldflags "-s -w -buildid=" -o wgcf-cli ./src/
+bash ./scripts/build.sh build
 ```

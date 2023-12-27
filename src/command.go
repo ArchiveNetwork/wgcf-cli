@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"runtime"
 )
 
 type Actions struct {
 	Help      bool
 	Register  bool
+	Version   bool
 	TeamToken string
 	Bind      bool
 	UnBind    bool
@@ -19,6 +21,7 @@ type Actions struct {
 	Name      string
 	Generate  string
 	Plus      bool
+	Update    bool
 }
 
 func ParseCommandLine() Actions {
@@ -30,15 +33,19 @@ func ParseCommandLine() Actions {
 	flag.BoolVar(&action.Register, "r", false, "")
 	flag.BoolVar(&action.Register, "register", false, "")
 
+	flag.BoolVar(&action.Version, "V", false, "")
+	flag.BoolVar(&action.Version, "version", false, "")
+
 	flag.StringVar(&action.TeamToken, "t", "", "")
 	flag.StringVar(&action.TeamToken, "token", "", "")
 
 	flag.BoolVar(&action.Bind, "b", false, "")
 	flag.BoolVar(&action.Bind, "bind", false, "")
 
-	flag.BoolVar(&action.UnBind, "u", false, "")
+	flag.BoolVar(&action.UnBind, "U", false, "")
 	flag.BoolVar(&action.UnBind, "unbind", false, "")
 
+	flag.BoolVar(&action.Cancel, "C", false, "")
 	flag.BoolVar(&action.Cancel, "cancel", false, "")
 
 	flag.StringVar(&action.FileName, "f", "", "")
@@ -56,40 +63,8 @@ func ParseCommandLine() Actions {
 	flag.BoolVar(&action.Plus, "p", false, "")
 	flag.BoolVar(&action.Plus, "plus", false, "")
 
-	flag.Visit(
-		func(f *flag.Flag) {
-			if f.Name == "h" || f.Name == "help" {
-				action.Help = true
-			}
-			if f.Name == "r" || f.Name == "register" {
-				action.Register = true
-			}
-			if f.Name == "t" || f.Name == "token" {
-				action.TeamToken = f.Value.String()
-			}
-			if f.Name == "b" || f.Name == "bind" {
-				action.Bind = true
-			}
-			if f.Name == "u" || f.Name == "unbind" {
-				action.UnBind = true
-			}
-			if f.Name == "f" || f.Name == "file" {
-				action.FileName = f.Value.String()
-			}
-			if f.Name == "l" || f.Name == "license" {
-				action.License = f.Value.String()
-			}
-			if f.Name == "n" || f.Name == "name" {
-				action.Name = f.Value.String()
-			}
-			if f.Name == "g" || f.Name == "generate" {
-				action.Generate = f.Value.String()
-			}
-			if f.Name == "p" || f.Name == "plus" {
-				action.Plus = true
-			}
-		},
-	)
+	flag.BoolVar(&action.Update, "u", false, "")
+	flag.BoolVar(&action.Update, "update", false, "")
 
 	flag.Usage = func() {
 		help()
@@ -114,18 +89,26 @@ func ParseCommandLine() Actions {
 }
 
 func help() {
-	fmt.Fprintf(os.Stderr, `wg-cli Revision: __REVISION__
-Usage:	%s [Options]
+	version()
+	fmt.Fprintf(os.Stderr, `Usage:	%s [Options]
 Options:    -h/--help                             Show help
+            -V/--version                          Show version
             -f/--file [string]                    Configuration file (default "wgcf.json")
             -r/--register                         Register an account
             -t/--token [string]                   Team token (must be used with -r/--register)
             -b/--bind                             Get the account binding devices
             -n/--name [string]                    Change the device name
             -l/--license [string]                 Change the license
-            -u/--unbind                           Unbind a device from the account
+            -U/--unbind                           Unbind a device from the account
+            -C/--cancel                           Cancel the account
             -g/--generate [sing-box/wg/xray]      Generate a [sing-box/wg/xray] configuration file
-            -p/--plus                             Recharge your account indefinitely.
-            --cancel                              Cancel the account
+            -p/--plus                             Recharge your account indefinitely
+            -u/--update                           Update the configuration file
 `, os.Args[0])
+}
+
+func version() {
+	fmt.Fprintf(os.Stderr, `wg-cli __VERSION__ %s
+Revision: __REVISION__
+`, runtime.Version())
 }

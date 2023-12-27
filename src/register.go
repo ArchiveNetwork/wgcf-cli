@@ -9,21 +9,6 @@ import (
 )
 
 func register(teamToken string) ([]byte, string, error) {
-	type RegisterOutput struct {
-		Endpoint struct {
-			V4 string `json:"v4"`
-			V6 string `json:"v6"`
-		} `json:"endpoint"`
-		ReservedStr string `json:"reserved_str"`
-		ReservedHex string `json:"reserved_hex"`
-		ReservedDec []int  `json:"reserved_dec"`
-		PrivateKey  string `json:"private_key"`
-		PublicKey   string `json:"public_key"`
-		Addresses   struct {
-			V4 string `json:"v4"`
-			V6 string `json:"v6"`
-		} `json:"addresses"`
-	}
 	var err error
 	var output, body, store []byte
 	var response Response

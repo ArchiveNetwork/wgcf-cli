@@ -1,13 +1,24 @@
 # scripts
-# <u>Review by yourself before use.</u>
+# [Review by yourself before use.](../LICENSE)
+
+## build.sh
+- Build script for `wgcf-cli`
+- It will build `wgcf-cli` to working directory
+
+**Usage:**
+```bash
+bash ./scripts/build.sh [build|clean]
+```
+
 ## install.sh
 - wgcf-cli install script
 
 **Usage:**
 - Install script supports `linux` / `macos` / `android(termux)`
 - It will install `wgcf-cli` to `$PREFIX/bin/`
+- Termux doesn't need manually set `$PREFIX`, it will use the default `$PREFIX`
 ```bash
-PREFIX=~/.local bash -c "$(curl -L wgcf-cli.vercel.app)"
+PREFIX="~/.local" bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
 - when without `$PREFIX`, you may need root privileges to run the script
 - It will install `wgcf-cli` to `/usr/local/bin/`

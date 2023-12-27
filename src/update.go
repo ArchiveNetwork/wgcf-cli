@@ -78,7 +78,7 @@ func updateConfigFile(filePath string) error {
 	}
 	if response.StatusCode != 204 && response.StatusCode != 200 {
 		var prettyJSON bytes.Buffer
-		if err = json.Indent(&prettyJSON, body, "", "  "); err != nil {
+		if err = json.Indent(&prettyJSON, body, "", "    "); err != nil {
 			fmt.Println(string(body))
 		} else {
 			fmt.Println(prettyJSON.String())

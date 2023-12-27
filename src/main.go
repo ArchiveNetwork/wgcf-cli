@@ -22,6 +22,11 @@ func main() {
 		help()
 		return
 	}
+	if action.Version {
+		version()
+		return
+	}
+
 	if action.Register {
 		if strings.HasPrefix(action.TeamToken, "-") {
 			err := fmt.Sprintln(`The parameter must not start with "-"`)
@@ -77,7 +82,7 @@ func main() {
 		panic(`The parameter must not start with "-"`)
 	}
 
-	if !action.Bind && !action.UnBind && !action.Cancel && action.License == "" && action.Name == "" && action.Generate == "" && !action.Plus {
+	if !action.Bind && !action.UnBind && !action.Cancel && action.License == "" && action.Name == "" && action.Generate == "" && !action.Plus && !action.Version && !action.Update {
 		panic("You need to specify an action")
 	}
 
@@ -216,5 +221,11 @@ func main() {
 		}
 		return
 	}
-
+	if action.Update {
+		if err = updateConfigFile(action.FileName); err != nil {
+			panic(err)
+		}
+		println("Updated config file successfully")
+		return
+	}
 }
