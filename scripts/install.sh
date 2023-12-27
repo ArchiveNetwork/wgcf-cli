@@ -10,6 +10,7 @@ if [[ ! -z $PREFIX ]]; then
     fi
     cd $PREFIX/tmp
 else
+    WAS_EXIST=true
     cd /tmp
 fi
 OS=$(uname)
@@ -85,12 +86,13 @@ fi
 install_software() {
     package_name="$1"
     file_to_detect="$2"
+    type -P "$file_to_detect" > /dev/null 2>&1 && return 
     if [[ -z $PACKAGE_MANAGEMENT_INSTALL ]]; then
         echo -e "error: The script does not support the package manager in this operating system."
         echo -e "error: Please install $package_name manually."
         exit 1
     fi
-    type -P "$file_to_detect" > /dev/null 2>&1 && return || echo -e "warn: $package_name not installed, installing." && sleep 1
+    echo -e "warn: $package_name not installed, installing." && sleep 1
     if ${PACKAGE_MANAGEMENT_INSTALL} "$package_name"; then
         echo "error: $package_name is installed."
     else
@@ -115,7 +117,7 @@ if [[ "$CHECKSUM" != "$LOCALSUM" ]]; then
 fi
 yes|unzip -q $PREFIX/tmp/$ZIP_FILE -d $PREFIX/tmp/wgcf-cli-$OS-$MACHINE > /dev/null 2>&1
 if [[ -z $PREFIX ]]; then
-    mv /tmp/wgcf-cli/wgcf-cli /usr/local/bin/wgcf-cli
+    mv /tmp/wgcf-cli-$OS-$MACHINE/wgcf-cli /usr/local/bin/wgcf-cli
 else
     if [[ ! -d $PREFIX/bin ]]; then
         mv $PREFIX/tmp/wgcf-cli-$OS-$MACHINE/wgcf-cli $PREFIX/wgcf-cli
