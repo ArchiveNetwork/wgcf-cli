@@ -108,7 +108,8 @@ Options:    -h/--help                             Show help
 }
 
 func version() {
-	fmt.Fprintf(os.Stderr, `wg-cli __VERSION__ %s
-Revision: __REVISION__
-`, runtime.Version())
+	fmt.Fprintf(os.Stderr, `wgcf-cli `+"\033[1;35m__VERSION__\033[0m"+` 
+Environment: %s %s/%s
+Revision: `+"\033[1;36m__REVISION__\033[0m"+`
+`, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 }

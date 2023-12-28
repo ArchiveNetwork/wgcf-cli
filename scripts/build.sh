@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
-cd "$(realpath "${0%scripts/build.sh}")"
+pushd "${0%scripts/build.sh}"
+git fetch --tags
 REVISION=$(git rev-parse HEAD)
 VERSION=$(git describe --tags --always --dirty)
 
@@ -15,11 +16,15 @@ build() {
     sed -i "s/__REVISION__/$REVISION/g" src/command.go
     sed -i "s/__VERSION__/$VERSION/g" src/command.go
     go build -trimpath -ldflags "-s -w -buildid=" -v -o wgcf-cli ./src/
+    popd
+    if ! [[ "$(realpath "${0%/scripts/build.sh}/wgcf-cli")" == "$(realpath ./wgcf-cli)" ]];then
+        mv ${0%/scripts/build.sh}/wgcf-cli ./wgcf-cli
+    fi
 }
 
 clean() {
     echo "Cleaning..."
-    go clean -v -i ./src/
+    go clean -v -i -r ./src/
     rm -f wgcf-cli
     echo "Cleaning done."
 }

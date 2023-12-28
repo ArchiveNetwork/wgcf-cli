@@ -8,6 +8,7 @@ import (
 func changeName(token string, id string, name string) (string, error) {
 	var err error
 	var body, output []byte
+	var prettyJSON bytes.Buffer
 	payload := []byte(
 		`{
 			"name":"` + name + `"
@@ -17,7 +18,6 @@ func changeName(token string, id string, name string) (string, error) {
 		panic(err)
 	}
 
-	var prettyJSON bytes.Buffer
 	if err = json.Indent(&prettyJSON, body, "", "    "); err == nil {
 		output = prettyJSON.Bytes()
 	} else {

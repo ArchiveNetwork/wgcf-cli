@@ -87,7 +87,7 @@ func main() {
 	}
 
 	if action.Bind {
-		token, id, err := readConfigFile(action.FileName)
+		token, id, err := getTokenID(action.FileName)
 		if err != nil {
 			panic(err)
 		}
@@ -106,7 +106,7 @@ func main() {
 	}
 
 	if action.UnBind {
-		token, id, err := readConfigFile(action.FileName)
+		token, id, err := getTokenID(action.FileName)
 		if err != nil {
 			panic(err)
 		}
@@ -125,7 +125,7 @@ func main() {
 	}
 
 	if action.Cancel {
-		if token, id, err = readConfigFile(action.FileName); err != nil {
+		if token, id, err = getTokenID(action.FileName); err != nil {
 			panic(err)
 		}
 
@@ -141,7 +141,7 @@ func main() {
 	}
 
 	if action.License != "" {
-		if token, id, err = readConfigFile(action.FileName); err != nil {
+		if token, id, err = getTokenID(action.FileName); err != nil {
 			panic(err)
 		}
 
@@ -162,7 +162,7 @@ func main() {
 	}
 	if action.Name != "" {
 
-		if token, id, err = readConfigFile(action.FileName); err != nil {
+		if token, id, err = getTokenID(action.FileName); err != nil {
 			panic(err)
 		}
 

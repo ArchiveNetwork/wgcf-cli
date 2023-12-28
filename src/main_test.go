@@ -93,7 +93,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if token, id, err = readConfigFile(action.FileName); err != nil {
+	if token, id, err = getTokenID(action.FileName); err != nil {
 		panic(err)
 	}
 
@@ -117,7 +117,7 @@ func TestMain(m *testing.M) {
 	}
 	fmt.Println(output)
 
-	if token, id, err = readConfigFile("test.json"); err != nil {
+	if token, id, err = getTokenID("test.json"); err != nil {
 		panic(err)
 	}
 
@@ -126,7 +126,7 @@ func TestMain(m *testing.M) {
 	}
 	fmt.Println("Cancled")
 
-	if token, id, err = readConfigFile(action.FileName); err != nil {
+	if token, id, err = getTokenID(action.FileName); err != nil {
 		panic(err)
 	}
 

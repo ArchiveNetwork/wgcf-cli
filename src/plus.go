@@ -15,7 +15,7 @@ func plus(filePath string, i int) error {
 	var currentStep int = i
 	ctx, cancel := context.WithCancel(context.Background())
 
-	if _, id, err = readConfigFile(filePath); err != nil {
+	if _, id, err = getTokenID(filePath); err != nil {
 		panic(err)
 	}
 

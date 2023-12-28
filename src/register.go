@@ -1,10 +1,7 @@
 package main
 
 import (
-	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
-	"strconv"
 	"time"
 )
 
@@ -45,23 +42,8 @@ func register(teamToken string) ([]byte, string, error) {
 		panic(err)
 	}
 
-	clientID := response.Config.ClientID
-	response.Config.PrivateKey = privateKey
-	decoded, err := base64.StdEncoding.DecodeString(clientID)
-	if err != nil {
-		panic(err)
-	}
-	hexString := hex.EncodeToString(decoded)
+	response.Config.ReservedDec, response.Config.ReservedHex = clientIDtoReserved(response.Config.ClientID)
 
-	reserved := []int{}
-	for i := 0; i < len(hexString); i += 2 {
-		hexByte := hexString[i : i+2]
-		decValue, _ := strconv.ParseInt(hexByte, 16, 64)
-		reserved = append(reserved, int(decValue))
-	}
-
-	response.Config.ReservedDec = reserved
-	response.Config.ReservedHex = "0x" + hexString
 	jsonIn := RegisterOutput{
 		Endpoint: struct {
 			V4 string `json:"v4"`

@@ -1,34 +1,16 @@
 package main
 
 import (
-	"bytes"
-	"crypto/tls"
-	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
 	"os"
-	"strconv"
 )
 
 func updateConfigFile(filePath string) error {
-	var ReadedFile Response
-	var responseBody Response
+	var ReadedFile, response Response
 	var file *os.File
-	var content []byte
 	var err error
-	if file, err = os.Open(filePath); err != nil {
-		panic(err)
-	}
-	if content, err = io.ReadAll(file); err != nil {
-		panic(err)
-	}
-	var response *http.Response
-	var request *http.Request
+	content := readConfig(filePath)
 	var body []byte
-	var client *http.Client
 	var updatedContent []byte
 
 	if err = json.Unmarshal(content, &ReadedFile); err != nil {
@@ -36,67 +18,22 @@ func updateConfigFile(filePath string) error {
 	}
 	defer file.Close()
 	if ReadedFile.Config.ReservedDec == nil || ReadedFile.Config.ReservedHex == "" {
-		clientID := ReadedFile.Config.ClientID
-		decoded, err := base64.StdEncoding.DecodeString(clientID)
-		if err != nil {
-			panic(err)
-		}
-		hexString := hex.EncodeToString(decoded)
-
-		reserved := []int{}
-		for i := 0; i < len(hexString); i += 2 {
-			hexByte := hexString[i : i+2]
-			decValue, _ := strconv.ParseInt(hexByte, 16, 64)
-			reserved = append(reserved, int(decValue))
-		}
-
-		ReadedFile.Config.ReservedDec = reserved
-		ReadedFile.Config.ReservedHex = "0x" + hexString
+		response.Config.ReservedDec, response.Config.ReservedHex = clientIDtoReserved(ReadedFile.Config.ClientID)
 	}
 
-	client = &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				MinVersion: tls.VersionTLS12,
-				MaxVersion: tls.VersionTLS13,
-			},
-		},
-	}
-
-	if request, err = http.NewRequest("GET", "https://api.cloudflareclient.com/v0a2158/reg/"+ReadedFile.ID, nil); err != nil {
+	if body, err = request([]byte(``), ReadedFile.Token, ReadedFile.ID, "update"); err != nil {
 		panic(err)
 	}
-	request.Header.Add("CF-Client-Version", "a-7.21-0721")
-	request.Header.Add("User-Agent", "okhttp/0.7.21")
-	request.Header.Add("Authorization", "Bearer "+ReadedFile.Token)
-
-	if response, err = client.Do(request); err != nil {
-		panic(err)
-	}
-	if body, err = io.ReadAll(response.Body); err != nil {
-		panic(err)
-	}
-	if response.StatusCode != 204 && response.StatusCode != 200 {
-		var prettyJSON bytes.Buffer
-		if err = json.Indent(&prettyJSON, body, "", "    "); err != nil {
-			fmt.Println(string(body))
-		} else {
-			fmt.Println(prettyJSON.String())
-		}
-		panic("REST API returned " + fmt.Sprint(response.StatusCode) + " " + http.StatusText(response.StatusCode))
-	}
-	if err = json.Unmarshal(body, &responseBody); err != nil {
+	if err = json.Unmarshal(body, &response); err != nil {
 		panic(err)
 	}
 	if ReadedFile.Account.PrivateKey != "" {
-		responseBody.Config.PrivateKey = ReadedFile.Account.PrivateKey
+		response.Config.PrivateKey = ReadedFile.Account.PrivateKey
 	} else {
-		responseBody.Config.PrivateKey = ReadedFile.Config.PrivateKey
+		response.Config.PrivateKey = ReadedFile.Config.PrivateKey
 	}
-	responseBody.Config.ReservedDec = ReadedFile.Config.ReservedDec
-	responseBody.Config.ReservedHex = ReadedFile.Config.ReservedHex
-	responseBody.Token = ReadedFile.Token
-	if updatedContent, err = json.MarshalIndent(responseBody, "", "    "); err != nil {
+	response.Token = ReadedFile.Token
+	if updatedContent, err = json.MarshalIndent(response, "", "    "); err != nil {
 		panic(err)
 	}
 

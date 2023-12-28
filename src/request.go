@@ -34,6 +34,9 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 		method = "POST"
 		teamToken = token
 		token = ""
+	} else if action == "update" {
+		url = "https://api.cloudflareclient.com/v0a2158/reg/" + id
+		method = "GET"
 	}
 	var body []byte
 	var request *http.Request
@@ -53,16 +56,17 @@ func request(payload []byte, token string, id string, action string) ([]byte, er
 		panic("Error parsing proxy URL: " + err.Error())
 	}
 
-	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			MinVersion: tls.VersionTLS12,
-			MaxVersion: tls.VersionTLS13,
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				MinVersion: tls.VersionTLS12,
+				MaxVersion: tls.VersionTLS13,
+			},
 		},
 	}
 	if proxy != "" {
-		transport.Proxy = http.ProxyURL(proxyURL)
+		client.Transport.(*http.Transport).Proxy = http.ProxyURL(proxyURL)
 	}
-	client := &http.Client{Transport: transport}
 
 	if request, err = http.NewRequest(method, url, bytes.NewBuffer(payload)); err != nil {
 		panic(err)
