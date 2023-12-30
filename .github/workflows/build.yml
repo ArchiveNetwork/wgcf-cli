@@ -82,15 +82,17 @@ jobs:
         run: go mod download
  
       - name: Build
+        if: matrix.goarch != 'mips' && matrix.goarch != 'mipsle'
         run: |
           mkdir -p build_assets
-          bash ./scripts/build.sh build
+          make
           mv wgcf-cli build_assets/wgcf-cli
  
       - name: Build Mips softfloat
         if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
         run: |
-          GOMIPS=softfloat bash ./scripts/build.sh build
+          mkdir -p build_assets
+          make
           mv wgcf-cli build_assets/wgcf-cli
 
       - name: Rename Windows

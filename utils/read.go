@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func readConfig(filePath string) []byte {
+func ReadConfig(filePath string) []byte {
 	var file *os.File
 	var err error
 	var content []byte
@@ -21,12 +21,12 @@ func readConfig(filePath string) []byte {
 	return content
 }
 
-func getTokenID(filePath string) (string, string, error) {
+func GetTokenID(filePath string) (string, string, error) {
 	var err error
 	var content []byte
 	var ReadedFile Response
 
-	content = readConfig(filePath)
+	content = ReadConfig(filePath)
 
 	if err = json.Unmarshal(content, &ReadedFile); err != nil {
 		panic(err)

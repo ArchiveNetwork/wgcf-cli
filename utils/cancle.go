@@ -1,6 +1,6 @@
-package main
+package utils
 
-func cancleAccount(token string, id string) error {
+func CancleAccount(token string, id string) error {
 
 	if _, err := request([]byte(``), token, id, "cancle"); err != nil {
 		panic(err)

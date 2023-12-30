@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"encoding/json"
@@ -53,7 +53,7 @@ type Wireguard struct {
 	} `conf:"Peer"`
 }
 
-func configGenerate(generateType string, filePath string) (string, string, error) {
+func ConfigGenerate(generateType string, filePath string) (string, string, error) {
 	var err error
 	var content []byte
 	var config []byte
@@ -198,7 +198,7 @@ Endpoint = %s`,
 	panic("unsupported generateType")
 }
 
-func nftConfigGenerate(reserved string) (string, error) {
+func NftConfigGenerate(reserved string) (string, error) {
 	config := fmt.Sprintf(`
 #!/usr/bin/nft -f
 # vim:set ts=4 sw=4 et:

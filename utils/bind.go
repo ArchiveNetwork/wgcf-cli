@@ -1,11 +1,11 @@
-package main
+package utils
 
 import (
 	"bytes"
 	"encoding/json"
 )
 
-func getBindingDevices(token string, id string) (string, error) {
+func GetBindingDevices(token string, id string) (string, error) {
 	var body, output []byte
 	var prettyJSON bytes.Buffer
 	var err error

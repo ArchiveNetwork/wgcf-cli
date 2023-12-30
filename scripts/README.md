@@ -1,15 +1,6 @@
 # scripts
 # [Review by yourself before use.](../LICENSE)
 
-## build.sh
-- Build script for `wgcf-cli`
-- It will build `wgcf-cli` to working directory
-
-**Usage:**
-```bash
-bash ./scripts/build.sh [build|clean]
-```
-
 ## install.sh
 - wgcf-cli install script
 

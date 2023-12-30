@@ -1,15 +1,15 @@
-package main
+package utils
 
 import (
 	"encoding/json"
 	"os"
 )
 
-func updateConfigFile(filePath string) error {
+func UpdateConfigFile(filePath string) error {
 	var ReadedFile, response Response
 	var file *os.File
 	var err error
-	content := readConfig(filePath)
+	content := ReadConfig(filePath)
 	var body []byte
 	var updatedContent []byte
 

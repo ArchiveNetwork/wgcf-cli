@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"context"
@@ -8,14 +8,14 @@ import (
 )
 
 // UGLY CODE , Pull Request is welcome
-func plus(filePath string, i int) error {
+func Plus(filePath string, i int) error {
 	var times sync.WaitGroup
 	var err error
 	var id string
 	var currentStep int = i
 	ctx, cancel := context.WithCancel(context.Background())
 
-	if _, id, err = getTokenID(filePath); err != nil {
+	if _, id, err = GetTokenID(filePath); err != nil {
 		panic(err)
 	}
 
@@ -60,7 +60,7 @@ func plus(filePath string, i int) error {
 				}
 				cancel()
 				time.Sleep(30 * time.Second)
-				plus(filePath, i)
+				Plus(filePath, i)
 			}
 			i++
 			fmt.Println("						Added", index, "GB")

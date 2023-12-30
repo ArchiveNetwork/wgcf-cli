@@ -1,20 +1,20 @@
-package main
+package utils
 
 import (
 	"bytes"
 	"encoding/json"
 )
 
-func changeName(token string, id string, name string) (string, error) {
+func UnBind(token string, id string) (string, error) {
 	var err error
-	var body, output []byte
+	var payload, body, output []byte
 	var prettyJSON bytes.Buffer
-	payload := []byte(
+	payload = []byte(
 		`{
-			"name":"` + name + `"
+			"active": false
 		 }`,
 	)
-	if body, err = request(payload, token, id, "name"); err != nil {
+	if body, err = request(payload, token, id, "unbind"); err != nil {
 		panic(err)
 	}
 

@@ -1,30 +1,21 @@
-package main
+package main_test
 
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"testing"
+
+	"github.com/ArchiveNetwork/wgcf-cli/cmd"
+	"github.com/ArchiveNetwork/wgcf-cli/utils"
 )
 
 func readLicense(filePath string) (string, error) {
-	var file *os.File
-	var content []byte
-	var err error
+	var ReadedFile utils.Response
 
-	if file, err = os.Open(filePath); err != nil {
-		panic(err)
-	}
-	defer file.Close()
+	content := utils.ReadConfig(filePath)
 
-	if content, err = io.ReadAll(file); err != nil {
-		panic(err)
-	}
-
-	var ReadedFile Response
-	err = json.Unmarshal(content, &ReadedFile)
-	if err != nil {
+	if err := json.Unmarshal(content, &ReadedFile); err != nil {
 		panic(err)
 	}
 
@@ -32,13 +23,13 @@ func readLicense(filePath string) (string, error) {
 }
 
 func TestMain(m *testing.M) {
-	var action Actions
+	var action cmd.Actions
 	var store []byte
 	var config, token, id, reserved, output string
 	var err error
 
 	action.FileName = "wgcf.json"
-	if store, output, err = register(""); err != nil {
+	if store, output, err = utils.Register(""); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
@@ -47,7 +38,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if store, output, err = register(""); err != nil {
+	if store, output, err = utils.Register(""); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
@@ -61,7 +52,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if config, reserved, err = configGenerate("wireguard", "test.json"); err != nil {
+	if config, reserved, err = utils.ConfigGenerate("wireguard", "test.json"); err != nil {
 		panic(err)
 	}
 
@@ -69,7 +60,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if output, err = nftConfigGenerate(reserved); err != nil {
+	if output, err = utils.NftConfigGenerate(reserved); err != nil {
 		panic(err)
 	}
 
@@ -77,7 +68,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if config, _, err = configGenerate("xray", "test.json"); err != nil {
+	if config, _, err = utils.ConfigGenerate("xray", "test.json"); err != nil {
 		panic(err)
 	}
 
@@ -85,7 +76,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if config, _, err = configGenerate("sing-box", "test.json"); err != nil {
+	if config, _, err = utils.ConfigGenerate("sing-box", "test.json"); err != nil {
 		panic(err)
 	}
 
@@ -93,44 +84,44 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	if token, id, err = getTokenID(action.FileName); err != nil {
+	if token, id, err = utils.GetTokenID(action.FileName); err != nil {
 		panic(err)
 	}
 
-	if output, err = getBindingDevices(token, id); err != nil {
-		panic(err)
-	}
-	fmt.Println(output)
-
-	if output, err = unBind(token, id); err != nil {
+	if output, err = utils.GetBindingDevices(token, id); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	if output, err = changeLicense(token, id, action.License); err != nil {
+	if output, err = utils.UnBind(token, id); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	if output, err = changeName(token, id, action.Name); err != nil {
+	if output, err = utils.ChangeLicense(token, id, action.License); err != nil {
 		panic(err)
 	}
 	fmt.Println(output)
 
-	if token, id, err = getTokenID("test.json"); err != nil {
+	if output, err = utils.ChangeName(token, id, action.Name); err != nil {
+		panic(err)
+	}
+	fmt.Println(output)
+
+	if token, id, err = utils.GetTokenID("test.json"); err != nil {
 		panic(err)
 	}
 
-	if err = cancleAccount(token, id); err != nil {
+	if err = utils.CancleAccount(token, id); err != nil {
 		panic(err)
 	}
 	fmt.Println("Cancled")
 
-	if token, id, err = getTokenID(action.FileName); err != nil {
+	if token, id, err = utils.GetTokenID(action.FileName); err != nil {
 		panic(err)
 	}
 
-	if err = cancleAccount(token, id); err != nil {
+	if err = utils.CancleAccount(token, id); err != nil {
 		panic(err)
 	}
 	fmt.Println("Cancled")

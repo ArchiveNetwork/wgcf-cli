@@ -1,2 +1,2 @@
-wgcf*
-test*
+*.json
+/wgcf-cli

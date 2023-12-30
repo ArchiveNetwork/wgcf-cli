@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/ArchiveNetwork/wgcf-cli/cmd"
+	"github.com/ArchiveNetwork/wgcf-cli/utils"
 )
 
 func main() {
-	action := ParseCommandLine()
+	action := cmd.ParseCommandLine()
 	var err error
 	var store []byte
 	var config, token, id, reserved, output string
@@ -19,11 +22,11 @@ func main() {
 	}
 
 	if action.Help {
-		help()
+		cmd.Help()
 		return
 	}
 	if action.Version {
-		version()
+		cmd.Version()
 		return
 	}
 
@@ -33,11 +36,11 @@ func main() {
 			panic(err)
 		}
 		if action.TeamToken != "" {
-			if store, output, err = register(action.TeamToken); err != nil {
+			if store, output, err = utils.Register(action.TeamToken); err != nil {
 				panic(err)
 			}
 		} else {
-			if store, output, err = register(""); err != nil {
+			if store, output, err = utils.Register(""); err != nil {
 				panic(err)
 			}
 		}
@@ -87,17 +90,17 @@ func main() {
 	}
 
 	if action.Bind {
-		token, id, err := getTokenID(action.FileName)
+		token, id, err := utils.GetTokenID(action.FileName)
 		if err != nil {
 			panic(err)
 		}
 
-		output, err := getBindingDevices(token, id)
+		output, err := utils.GetBindingDevices(token, id)
 		if err != nil {
 			panic(err)
 		}
 
-		if err = updateConfigFile(action.FileName); err != nil {
+		if err = utils.UpdateConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 		fmt.Println(output)
@@ -106,17 +109,17 @@ func main() {
 	}
 
 	if action.UnBind {
-		token, id, err := getTokenID(action.FileName)
+		token, id, err := utils.GetTokenID(action.FileName)
 		if err != nil {
 			panic(err)
 		}
 
-		output, err := unBind(token, id)
+		output, err := utils.UnBind(token, id)
 		if err != nil {
 			panic(err)
 		}
 
-		if err = updateConfigFile(action.FileName); err != nil {
+		if err = utils.UpdateConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 
@@ -125,11 +128,11 @@ func main() {
 	}
 
 	if action.Cancel {
-		if token, id, err = getTokenID(action.FileName); err != nil {
+		if token, id, err = utils.GetTokenID(action.FileName); err != nil {
 			panic(err)
 		}
 
-		if err = cancleAccount(token, id); err != nil {
+		if err = utils.CancleAccount(token, id); err != nil {
 			panic(err)
 		}
 
@@ -141,15 +144,15 @@ func main() {
 	}
 
 	if action.License != "" {
-		if token, id, err = getTokenID(action.FileName); err != nil {
+		if token, id, err = utils.GetTokenID(action.FileName); err != nil {
 			panic(err)
 		}
 
-		if output, err = changeLicense(token, id, action.License); err != nil {
+		if output, err = utils.ChangeLicense(token, id, action.License); err != nil {
 			panic(err)
 		}
 
-		if err = updateConfigFile(action.FileName); err != nil {
+		if err = utils.UpdateConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 
@@ -162,15 +165,15 @@ func main() {
 	}
 	if action.Name != "" {
 
-		if token, id, err = getTokenID(action.FileName); err != nil {
+		if token, id, err = utils.GetTokenID(action.FileName); err != nil {
 			panic(err)
 		}
 
-		if output, err = changeName(token, id, action.Name); err != nil {
+		if output, err = utils.ChangeName(token, id, action.Name); err != nil {
 			panic(err)
 		}
 
-		if err = updateConfigFile(action.FileName); err != nil {
+		if err = utils.UpdateConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 		fmt.Println(output)
@@ -181,7 +184,7 @@ func main() {
 		panic(`The parameter must not start with "-"`)
 	}
 	if action.Generate != "" && action.Generate == "wg" {
-		if config, reserved, err = configGenerate("wireguard", action.FileName); err != nil {
+		if config, reserved, err = utils.ConfigGenerate("wireguard", action.FileName); err != nil {
 			panic(err)
 		}
 
@@ -189,7 +192,7 @@ func main() {
 			panic(err)
 		}
 
-		if output, err = nftConfigGenerate(reserved); err != nil {
+		if output, err = utils.NftConfigGenerate(reserved); err != nil {
 			panic(err)
 		}
 
@@ -197,7 +200,7 @@ func main() {
 			panic(err)
 		}
 	} else if action.Generate != "" && action.Generate == "xray" {
-		if config, _, err = configGenerate("xray", action.FileName); err != nil {
+		if config, _, err = utils.ConfigGenerate("xray", action.FileName); err != nil {
 			panic(err)
 		}
 
@@ -206,7 +209,7 @@ func main() {
 		}
 		return
 	} else if action.Generate != "" && action.Generate == "sing-box" {
-		if config, _, err = configGenerate("sing-box", action.FileName); err != nil {
+		if config, _, err = utils.ConfigGenerate("sing-box", action.FileName); err != nil {
 			panic(err)
 		}
 
@@ -216,13 +219,13 @@ func main() {
 		return
 	}
 	if action.Plus {
-		if err = plus(action.FileName, 1); err != nil {
+		if err = utils.Plus(action.FileName, 1); err != nil {
 			panic(err)
 		}
 		return
 	}
 	if action.Update {
-		if err = updateConfigFile(action.FileName); err != nil {
+		if err = utils.UpdateConfigFile(action.FileName); err != nil {
 			panic(err)
 		}
 		println("Updated config file successfully")

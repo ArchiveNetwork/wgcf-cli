@@ -1,11 +1,11 @@
-package main
+package utils
 
 import (
 	"encoding/json"
 	"time"
 )
 
-func register(teamToken string) ([]byte, string, error) {
+func Register(teamToken string) ([]byte, string, error) {
 	var err error
 	var output, body, store []byte
 	var response Response

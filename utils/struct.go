@@ -1,4 +1,4 @@
-package main
+package utils
 
 type RegisterOutput struct {
 	Endpoint struct {

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"flag"
@@ -6,6 +6,9 @@ import (
 	"os"
 	"regexp"
 	"runtime"
+	"runtime/debug"
+
+	"github.com/ArchiveNetwork/wgcf-cli/constant"
 )
 
 type Actions struct {
@@ -67,7 +70,7 @@ func ParseCommandLine() Actions {
 	flag.BoolVar(&action.Update, "update", false, "")
 
 	flag.Usage = func() {
-		help()
+		Help()
 	}
 
 	flag.Parse()
@@ -88,8 +91,8 @@ func ParseCommandLine() Actions {
 	return action
 }
 
-func help() {
-	version()
+func Help() {
+	Version()
 	fmt.Fprintf(os.Stderr, `Usage:	%s [Options]
 Options:    -h/--help                             Show help
             -V/--version                          Show version
@@ -107,9 +110,23 @@ Options:    -h/--help                             Show help
 `, os.Args[0])
 }
 
-func version() {
-	fmt.Fprintf(os.Stderr, `wgcf-cli `+"\033[1;35m__VERSION__\033[0m"+` 
+func Version() {
+	var revision string
+	debugInfo, loaded := debug.ReadBuildInfo()
+
+	if loaded {
+		for _, setting := range debugInfo.Settings {
+			switch setting.Key {
+			case "vcs.revision":
+				revision = setting.Value
+			}
+		}
+	}
+	if revision == "" {
+		revision = "unknow"
+	}
+	fmt.Fprintf(os.Stderr, `wgcf-cli version `+"\033[1;35m"+constant.Version+"\033[0m"+` 
 Environment: %s %s/%s
-Revision: `+"\033[1;36m__REVISION__\033[0m"+`
+`+"Revision: \033[1;36m"+revision+"\033[0m"+`
 `, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 }

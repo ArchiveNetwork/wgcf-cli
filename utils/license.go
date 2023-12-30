@@ -1,11 +1,11 @@
-package main
+package utils
 
 import (
 	"bytes"
 	"encoding/json"
 )
 
-func changeLicense(token string, id string, license string) (string, error) {
+func ChangeLicense(token string, id string, license string) (string, error) {
 	var body []byte
 	var err error
 	var output []byte
