@@ -2,9 +2,14 @@ name: Build and Release
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: [Create release]
+    types:
+      - completed
   release:
     types: [published]
   push:
+    tags: v*
     branches:
       - master
     paths:
@@ -20,6 +25,42 @@ on:
       - "go.sum"
       - ".github/workflows/build.yml"
 jobs:
+  release:
+    name: Release pushed tag
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Get change log
+        run: |
+            git fetch --unshallow
+            LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
+            git log --format="- %h%n%s%n%b" $LAST_TAG...HEAD > changelog.md
+
+      - name: Check release type
+        run: |
+            if echo ${{ github.ref_name }} | grep -qP '(alpha|beta|rc)'
+            then
+            echo pre-release=true >> $GITHUB_ENV
+            else
+            echo pre-release=false >> $GITHUB_ENV
+            fi
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            gh release create "${{ github.ref_name }}" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${{ github.ref_name }}" \
+              $([[ ${{ env.pre-release }} == true ]] && echo --prerelease) \
+              -F changelog.md \
+              --generate-notes
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{github.ref}}
   build:
     permissions:
       contents: write
@@ -94,7 +135,7 @@ jobs:
 
       - name: Create ZIP archive
         shell: bash
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || (github.event_name == 'push' && (contains(github.ref, 'refs/tags/')))
         run: |
           pushd build_assets || exit 1
           touch -mt $(date +%Y01010000) *
@@ -119,7 +160,7 @@ jobs:
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@1beeb572c19a9242f4361f4cee78f8e0d9aec5df # v2
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || (github.event_name == 'push' && (contains(github.ref, 'refs/tags/')))
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./wgcf-cli-${{ env.ASSET_NAME }}.zip*
