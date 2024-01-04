@@ -3,8 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"os"
 )
 
 type Xray struct {
@@ -57,18 +55,8 @@ func ConfigGenerate(generateType string, filePath string) (string, string, error
 	var err error
 	var content []byte
 	var config []byte
-	var file *os.File
-	if file, err = os.Open(filePath); err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	if content, err = io.ReadAll(file); err != nil {
-		panic(err)
-	}
-
 	var ReadedFile Response
-
+	content = ReadConfig(filePath)
 	if err = json.Unmarshal(content, &ReadedFile); err != nil {
 		panic(err)
 	}
@@ -160,7 +148,8 @@ PostDown = %s
 [Peer]
 PublicKey = %s
 AllowedIPs = %v
-Endpoint = %s`,
+Endpoint = %s
+`,
 			input.Interface.PrivateKey,
 			input.Interface.Address[0],
 			input.Interface.Address[1],

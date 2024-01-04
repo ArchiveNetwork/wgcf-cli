@@ -19,6 +19,9 @@ func UpdateConfigFile(filePath string) error {
 	defer file.Close()
 	if ReadedFile.Config.ReservedDec == nil || ReadedFile.Config.ReservedHex == "" {
 		response.Config.ReservedDec, response.Config.ReservedHex = clientIDtoReserved(ReadedFile.Config.ClientID)
+	} else {
+		response.Config.ReservedDec = ReadedFile.Config.ReservedDec
+		response.Config.ReservedHex = ReadedFile.Config.ReservedHex
 	}
 
 	if body, err = request([]byte(``), ReadedFile.Token, ReadedFile.ID, "update"); err != nil {

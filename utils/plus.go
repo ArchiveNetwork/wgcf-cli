@@ -3,7 +3,10 @@ package utils
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -19,9 +22,35 @@ func Plus(filePath string, i int) error {
 		panic(err)
 	}
 
+	go func() {
+		signalCh := make(chan os.Signal, 1)
+		signal.Notify(signalCh, os.Interrupt, syscall.SIGINT)
+		<-signalCh
+		os.Exit(1)
+	}()
+	go func() {
+		signalCh := make(chan os.Signal, 1)
+		signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
+		<-signalCh
+		cancel()
+		fmt.Println("\nWaiting for Response...")
+		go func() {
+			signalCh := make(chan os.Signal, 1)
+			signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
+			<-signalCh
+			fmt.Println()
+			os.Exit(1)
+		}()
+		times.Wait()
+		fmt.Println("Updating config file...")
+		UpdateConfigFile(filePath)
+		fmt.Println("Updated config file successfully")
+		os.Exit(0)
+	}()
+
 	for {
-		times.Add(1)
 		time.Sleep(500 * time.Millisecond)
+		times.Add(1)
 		go func(index int) {
 			var publicKey string
 			defer times.Done()

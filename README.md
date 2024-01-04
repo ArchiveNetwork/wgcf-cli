@@ -6,7 +6,7 @@ Thanks: [@fscarmen](https://github.com/fscarmen/), [fscarmen/warp](https://gitla
 - It will install `wgcf-cli` to `$PREFIX/bin/`
 - Termux doesn't need manually set `$PREFIX`, it will use the default `$PREFIX`
 ```bash
-PREFIX="~/.local" bash -c "$(curl -L wgcf-cli.vercel.app)"
+PREFIX=~/.local bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
 - when without `$PREFIX`, you may need root privileges to run the script
 - It will install `wgcf-cli` to `/usr/local/bin/`
