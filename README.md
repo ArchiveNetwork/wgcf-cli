@@ -54,5 +54,5 @@ sudo bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
 ## Build 
 ```bash
-bash ./scripts/build.sh build
+make
 ```

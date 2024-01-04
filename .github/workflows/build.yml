@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-#  push:
-#    branches:
-#      - master
-#    paths:
+  push:
+    branches:
+      - master
+    paths:
 #      - "**/*.go"
 #      - "go.mod"
 #      - "go.sum"
-#      - ".github/workflows/build.yml"
+      - ".github/workflows/build.yml"
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -82,24 +82,10 @@ jobs:
         run: go mod download
  
       - name: Build
-        if: matrix.goarch != 'mips' && matrix.goarch != 'mipsle'
         run: |
           mkdir -p build_assets
           make
-          mv wgcf-cli build_assets/wgcf-cli
- 
-      - name: Build Mips softfloat
-        if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
-        run: |
-          mkdir -p build_assets
-          make
-          mv wgcf-cli build_assets/wgcf-cli
-
-      - name: Rename Windows
-        if: matrix.goos == 'windows'
-        run: |
-          cd ./build_assets || exit 1
-          mv wgcf-cli wgcf-cli.exe
+          find . -maxdepth 1 -type f -regex './wgcf-cli\(\|.exe\)' -exec mv {} ./build_assets/ \;
 
       - name: Copy README.md & LICENSE
         run: |

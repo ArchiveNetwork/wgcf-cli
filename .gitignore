@@ -1,2 +1,4 @@
 *.json
-/wgcf-cli
+*.conf
+/wgcf-cli*
+/build_assets
