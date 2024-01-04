@@ -24,12 +24,6 @@ func Plus(filePath string, i int) error {
 
 	go func() {
 		signalCh := make(chan os.Signal, 1)
-		signal.Notify(signalCh, os.Interrupt, syscall.SIGINT)
-		<-signalCh
-		os.Exit(1)
-	}()
-	go func() {
-		signalCh := make(chan os.Signal, 1)
 		signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
 		<-signalCh
 		cancel()
