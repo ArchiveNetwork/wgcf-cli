@@ -88,6 +88,7 @@ func Plus(filePath string, i int) error {
 					return
 				default:
 				}
+				times.Done()
 				cancel()
 				time.Sleep(30 * time.Second)
 
