@@ -11,35 +11,42 @@ import (
 )
 
 // UGLY CODE , Pull Request is welcome
+// This may cause some memery leak, DO NOT use for a long time.
 func Plus(filePath string, i int) error {
 	var times sync.WaitGroup
 	var err error
 	var id string
 	var currentStep int = i
 	ctx, cancel := context.WithCancel(context.Background())
-
+	C, Ca := context.WithCancel(context.Background())
 	if _, id, err = GetTokenID(filePath); err != nil {
 		panic(err)
 	}
-
 	go func() {
-		signalCh := make(chan os.Signal, 1)
-		signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
-		<-signalCh
-		cancel()
-		fmt.Println("\nWaiting for Response...")
-		go func() {
+		for {
 			signalCh := make(chan os.Signal, 1)
 			signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
-			<-signalCh
-			fmt.Println()
-			os.Exit(1)
-		}()
-		times.Wait()
-		fmt.Println("Updating config file...")
-		UpdateConfigFile(filePath)
-		fmt.Println("Updated config file successfully")
-		os.Exit(0)
+			select {
+			case <-C.Done():
+				return
+			case <-signalCh:
+				cancel()
+				fmt.Println("\nWaiting for Response...")
+				go func() {
+					signalCh := make(chan os.Signal, 1)
+					signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
+					<-signalCh
+					fmt.Println()
+					os.Exit(1)
+				}()
+				times.Wait()
+				fmt.Println("Updating config file...")
+				UpdateConfigFile(filePath)
+				fmt.Println("Updated config file successfully")
+				os.Exit(0)
+			}
+
+		}
 	}()
 
 	for {
@@ -83,6 +90,8 @@ func Plus(filePath string, i int) error {
 				}
 				cancel()
 				time.Sleep(30 * time.Second)
+
+				Ca()
 				Plus(filePath, i)
 			}
 			i++
