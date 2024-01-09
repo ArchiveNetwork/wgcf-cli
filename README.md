@@ -56,3 +56,12 @@ sudo bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```bash
 make
 ```
+- Available environment variable:
+1. `GOFLAGS`, Default: 
+```bash
+-trimpath -ldflags "-X github.com/ArchiveNetwork/wgcf-cli/constant.Version=$(VERSION) -s -w -buildid=" -v
+```
+2. `PREFIX`, Default: 
+```bash
+$(shell go env GOPATH)
+```
