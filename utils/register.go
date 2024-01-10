@@ -43,7 +43,7 @@ func Register(teamToken string) ([]byte, string, error) {
 	}
 
 	response.Config.ReservedDec, response.Config.ReservedHex = clientIDtoReserved(response.Config.ClientID)
-
+	response.Config.PrivateKey = privateKey
 	jsonIn := RegisterOutput{
 		Endpoint: struct {
 			V4 string `json:"v4"`
@@ -55,7 +55,7 @@ func Register(teamToken string) ([]byte, string, error) {
 		ReservedStr: response.Config.ClientID,
 		ReservedHex: response.Config.ReservedHex,
 		ReservedDec: response.Config.ReservedDec,
-		PrivateKey:  privateKey,
+		PrivateKey:  response.Config.PrivateKey,
 		PublicKey:   response.Config.Peers[0].PublicKey,
 		Addresses:   response.Config.Interface.Addresses,
 	}
