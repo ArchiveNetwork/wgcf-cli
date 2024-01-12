@@ -11,7 +11,7 @@ import (
 )
 
 // UGLY CODE , Pull Request is welcome
-func Plus(filePath string) error {
+func Plus(filePath string, test bool) error {
 	var times sync.WaitGroup
 	var err error
 	var id string
@@ -35,15 +35,33 @@ func Plus(filePath string) error {
 			os.Exit(1)
 		}()
 		times.Wait()
+		fmt.Printf("Total added %d GB\n", currentStep)
 		fmt.Println("Updating config file...")
 		UpdateConfigFile(filePath)
 		fmt.Println("Updated config file successfully")
 		os.Exit(0)
 	}()
 
+	go func() {
+		for {
+			time.Sleep(100 * time.Millisecond)
+			if i := currentStep % 10; i == 0 {
+				UpdateConfigFile(filePath)
+			}
+		}
+	}()
+
 	for {
 		time.Sleep(500 * time.Millisecond)
 		times.Add(1)
+		if test {
+			select {
+			case <-ctx.Done():
+				times.Done()
+				return nil
+			default:
+			}
+		}
 		select {
 		case <-ctx.Done():
 			times.Done()
@@ -71,6 +89,7 @@ func Plus(filePath string) error {
 				)
 				fmt.Println("Registering...", index, "times")
 				if _, err = request(payload, "", "", "register"); err != nil {
+					times.Done()
 					fmt.Println(err)
 					fmt.Println("Waiting for 30 seconds...")
 					select {
@@ -78,7 +97,6 @@ func Plus(filePath string) error {
 						return
 					default:
 					}
-					times.Done()
 					cancel()
 					time.Sleep(30 * time.Second)
 					currentStep--

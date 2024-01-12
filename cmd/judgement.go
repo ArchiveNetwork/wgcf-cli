@@ -218,7 +218,7 @@ func Judgement() error {
 		return nil
 	}
 	if action.Plus {
-		if err = utils.Plus(action.FileName); err != nil {
+		if err = utils.Plus(action.FileName, false); err != nil {
 			panic(err)
 		}
 		return nil

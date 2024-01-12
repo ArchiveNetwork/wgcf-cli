@@ -112,6 +112,10 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
+	if err = utils.Plus(action.FileName, true); err != nil {
+		panic(err)
+	}
+
 	if err = utils.CancleAccount(token, id); err != nil {
 		panic(err)
 	}
