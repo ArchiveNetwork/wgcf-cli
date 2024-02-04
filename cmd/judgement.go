@@ -13,7 +13,15 @@ func Judgement() error {
 	action := ParseCommandLine()
 	var err error
 	var store []byte
-	var config, token, id, reserved, output string
+	var config, token, id, reserved, output, fileType string
+
+	if _, err := os.Stat(action.FileName); err == nil {
+		if fileType, err = utils.GetFileType(action.FileName); err != nil {
+			panic(err)
+		}
+	} else {
+		fileType = "ini"
+	}
 
 	if len(os.Args) == 1 {
 		flag.Usage()
@@ -45,26 +53,37 @@ func Judgement() error {
 		}
 		fmt.Println(output)
 		if action.FileName != "" {
-			if err = os.WriteFile(action.FileName, store, 0600); err != nil {
-				panic(err)
+			if strings.HasSuffix(action.FileName, ".ini") {
+				if err = os.WriteFile(action.FileName, store, 0600); err != nil {
+					panic(err)
+				}
+				if err = utils.ConvertJsonToIni(action.FileName); err != nil {
+					panic(err)
+				}
+			} else {
+				if err = os.WriteFile(action.FileName, store, 0600); err != nil {
+					panic(err)
+				}
 			}
 			return nil
 		} else {
-			fileName := "wgcf.json"
-			editedFileName := "wgcf.json"
+			fileName := "wgcf.ini"
+			editedFileName := "wgcf.ini"
 			i := 0
 
 			for {
 				if _, err := os.Stat(fileName); err == nil {
-					fileName = fmt.Sprintf("%s-%d.json", editedFileName[:len(editedFileName)-5], i)
+					fileName = fmt.Sprintf("%s-%d.ini", editedFileName[:len(editedFileName)-4], i)
 					i++
 				} else {
 					break
 				}
 			}
 
-			err := os.WriteFile(fileName, store, 0600)
-			if err != nil {
+			if err = os.WriteFile(fileName, store, 0600); err != nil {
+				panic(err)
+			}
+			if err = utils.ConvertJsonToIni(fileName); err != nil {
 				panic(err)
 			}
 			return nil
@@ -79,38 +98,54 @@ func Judgement() error {
 	}
 
 	if action.FileName == "" {
-		action.FileName = "wgcf.json"
+		action.FileName = "wgcf." + fileType
 	} else if strings.HasPrefix(action.FileName, "-") {
 		panic(`The parameter must not start with "-"`)
 	}
 
-	if !action.Bind && !action.UnBind && !action.Cancel && action.License == "" && action.Name == "" && action.Generate == "" && !action.Plus && !action.Version && !action.Update {
+	if !action.Bind && !action.UnBind && !action.Cancel && action.License == "" && action.Name == "" && action.Generate == "" && !action.Plus && !action.Version && !action.Update && !action.Convert {
 		panic("You need to specify an action")
 	}
 
 	if action.Bind {
-		token, id, err := utils.GetTokenID(action.FileName)
-		if err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if token, id, err = utils.IniGetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if token, id, err = utils.GetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 
 		output, err := utils.GetBindingDevices(token, id)
 		if err != nil {
 			panic(err)
 		}
-
-		if err = utils.UpdateConfigFile(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if err = utils.UpdateIniConfig(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if err = utils.UpdateConfigFile(action.FileName); err != nil {
+				panic(err)
+			}
 		}
+
 		fmt.Println(output)
 
 		return nil
 	}
 
 	if action.UnBind {
-		token, id, err := utils.GetTokenID(action.FileName)
-		if err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if token, id, err = utils.IniGetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if token, id, err = utils.GetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 
 		output, err := utils.UnBind(token, id)
@@ -118,8 +153,14 @@ func Judgement() error {
 			panic(err)
 		}
 
-		if err = utils.UpdateConfigFile(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if err = utils.UpdateIniConfig(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if err = utils.UpdateConfigFile(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 
 		fmt.Println(output)
@@ -127,10 +168,15 @@ func Judgement() error {
 	}
 
 	if action.Cancel {
-		if token, id, err = utils.GetTokenID(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if token, id, err = utils.IniGetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if token, id, err = utils.GetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
 		}
-
 		if err = utils.CancleAccount(token, id); err != nil {
 			panic(err)
 		}
@@ -143,16 +189,28 @@ func Judgement() error {
 	}
 
 	if action.License != "" {
-		if token, id, err = utils.GetTokenID(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if token, id, err = utils.IniGetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if token, id, err = utils.GetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 
 		if output, err = utils.ChangeLicense(token, id, action.License); err != nil {
 			panic(err)
 		}
 
-		if err = utils.UpdateConfigFile(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if err = utils.UpdateIniConfig(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if err = utils.UpdateConfigFile(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 
 		fmt.Println(output)
@@ -164,16 +222,28 @@ func Judgement() error {
 	}
 	if action.Name != "" {
 
-		if token, id, err = utils.GetTokenID(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if token, id, err = utils.IniGetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if token, id, err = utils.GetTokenID(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 
 		if output, err = utils.ChangeName(token, id, action.Name); err != nil {
 			panic(err)
 		}
 
-		if err = utils.UpdateConfigFile(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if err = utils.UpdateIniConfig(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if err = utils.UpdateConfigFile(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 		fmt.Println(output)
 		return nil
@@ -224,10 +294,28 @@ func Judgement() error {
 		return nil
 	}
 	if action.Update {
-		if err = utils.UpdateConfigFile(action.FileName); err != nil {
-			panic(err)
+		if fileType == "ini" {
+			if err = utils.UpdateIniConfig(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			if err = utils.UpdateConfigFile(action.FileName); err != nil {
+				panic(err)
+			}
 		}
 		println("Updated config file successfully")
+		return nil
+	}
+	if action.Convert {
+		if fileType == "json" {
+			if err = utils.ConvertJsonToIni(action.FileName); err != nil {
+				panic(err)
+			}
+		} else if fileType == "ini" {
+			println("The file is already in ini format")
+			return nil
+		}
+		println("Converted config file successfully")
 		return nil
 	}
 	return nil

@@ -37,6 +37,9 @@ func TestMain(m *testing.M) {
 	if err = os.WriteFile(action.FileName, store, 0600); err != nil {
 		panic(err)
 	}
+	if err = utils.ConvertJsonToIni(action.FileName); err != nil {
+		panic(err)
+	}
 
 	if store, output, err = utils.Register(""); err != nil {
 		panic(err)
@@ -44,6 +47,16 @@ func TestMain(m *testing.M) {
 	fmt.Println(output)
 
 	if err = os.WriteFile("test.json", store, 0600); err != nil {
+		panic(err)
+	}
+	if err = utils.ConvertJsonToIni("test.json"); err != nil {
+		panic(err)
+	}
+
+	if err = utils.UpdateIniConfig("wgcf.ini"); err != nil {
+		panic(err)
+	}
+	if err = utils.UpdateIniConfig("test.ini"); err != nil {
 		panic(err)
 	}
 
@@ -151,6 +164,14 @@ func TestMain(m *testing.M) {
 	}
 
 	if err = os.Remove("wgcf.sing-box.json"); err != nil {
+		panic(err)
+	}
+
+	if err = os.Remove("wgcf.ini"); err != nil {
+		panic(err)
+	}
+
+	if err = os.Remove("test.ini"); err != nil {
 		panic(err)
 	}
 }

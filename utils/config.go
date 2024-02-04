@@ -3,6 +3,10 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
+	"strconv"
+
+	"github.com/go-ini/ini"
 )
 
 type Xray struct {
@@ -55,10 +59,38 @@ func ConfigGenerate(generateType string, filePath string) (string, string, error
 	var err error
 	var content []byte
 	var config []byte
+	var fileType string
 	var ReadedFile Response
-	content = ReadConfig(filePath)
-	if err = json.Unmarshal(content, &ReadedFile); err != nil {
+	if fileType, err = GetFileType(filePath); err != nil {
 		panic(err)
+	}
+	if fileType == "json" {
+		content = ReadConfig(filePath)
+		if err = json.Unmarshal(content, &ReadedFile); err != nil {
+			panic(err)
+		}
+	} else {
+		var cfg *ini.File
+		if cfg, err = ini.Load(filePath); err != nil {
+			panic(err)
+		}
+		section_Config := cfg.Section("Config")
+		ReadedFile.Config.PrivateKey = section_Config.Key("PrivateKey").String()
+		ReadedFile.Config.Interface.Addresses.V4 = section_Config.Key("IPv4").String()
+		ReadedFile.Config.Interface.Addresses.V6 = section_Config.Key("IPv6").String()
+		ReadedFile.Config.ClientID = section_Config.Key("ClientID").String()
+		ReadedFile.Config.ReservedHex = section_Config.Key("ReservedHex").String()
+		var intSlice []int
+		re := regexp.MustCompile(`\d+`)
+		matches := re.FindAllString(section_Config.Key("ReservedDec").String(), -1)
+		for _, str := range matches {
+			var i int
+			if i, err = strconv.Atoi(str); err != nil {
+				panic(err)
+			}
+			intSlice = append(intSlice, i)
+		}
+		ReadedFile.Config.ReservedDec = intSlice
 	}
 
 	if generateType == "xray" {

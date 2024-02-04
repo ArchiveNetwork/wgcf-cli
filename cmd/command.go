@@ -25,6 +25,7 @@ type Actions struct {
 	Generate  string
 	Plus      bool
 	Update    bool
+	Convert   bool
 }
 
 func ParseCommandLine() Actions {
@@ -69,6 +70,9 @@ func ParseCommandLine() Actions {
 	flag.BoolVar(&action.Update, "u", false, "")
 	flag.BoolVar(&action.Update, "update", false, "")
 
+	flag.BoolVar(&action.Convert, "c", false, "")
+	flag.BoolVar(&action.Convert, "covert", false, "")
+
 	flag.Usage = func() {
 		Help()
 	}
@@ -107,6 +111,7 @@ Options:    -h/--help                             Show help
             -g/--generate [sing-box/wg/xray]      Generate a [sing-box/wg/xray] configuration file
             -p/--plus                             Recharge your account indefinitely
             -u/--update                           Update the configuration file
+            -c/--convert                           Convert the configuration file from json to ini
 `, os.Args[0])
 }
 
