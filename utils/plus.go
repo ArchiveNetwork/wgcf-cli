@@ -17,8 +17,14 @@ func Plus(filePath string, test bool) error {
 	var id string
 	var currentStep int = 1
 	ctx, cancel := context.WithCancel(context.Background())
-	if _, id, err = GetTokenID(filePath); err != nil {
-		panic(err)
+	if fileType, err := GetFileType(filePath); fileType == "json" && err == nil {
+		if _, id, err = GetTokenID(filePath); err != nil {
+			panic(err)
+		}
+	} else {
+		if _, id, err = IniGetTokenID(filePath); err != nil {
+			panic(err)
+		}
 	}
 
 	go func() {
@@ -37,7 +43,11 @@ func Plus(filePath string, test bool) error {
 		times.Wait()
 		fmt.Printf("Total added %d GB\n", currentStep)
 		fmt.Println("Updating config file...")
-		UpdateConfigFile(filePath)
+		if fileType, err := GetFileType(filePath); fileType == "json" && err == nil {
+			UpdateConfigFile(filePath)
+		} else {
+			UpdateIniConfig(filePath)
+		}
 		fmt.Println("Updated config file successfully")
 		os.Exit(0)
 	}()
@@ -46,7 +56,11 @@ func Plus(filePath string, test bool) error {
 		for {
 			time.Sleep(100 * time.Millisecond)
 			if i := currentStep % 10; i == 0 {
-				UpdateConfigFile(filePath)
+				if fileType, err := GetFileType(filePath); fileType == "json" && err == nil {
+					UpdateConfigFile(filePath)
+				} else {
+					UpdateIniConfig(filePath)
+				}
 			}
 		}
 	}()
