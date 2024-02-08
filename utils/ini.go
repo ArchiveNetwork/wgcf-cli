@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/go-ini/ini"
@@ -84,7 +85,7 @@ func WriteIniConfig(filePath string, ReadedFile *Response) error {
 	if section_Usage, err = cfg.NewSection("Usage"); err != nil {
 		panic(err)
 	}
-	section_Usage.NewKey("PremiumData", fmt.Sprint(float32(ReadedFile.Account.PremiumData)/1024/1024/1024, "GB"))
+	section_Usage.NewKey("PremiumData", fmt.Sprint(float32(ReadedFile.Account.PremiumData)/1000/1000/1000, "GB"))
 	section_Usage.NewKey("License", fmt.Sprint(ReadedFile.Account.License))
 	if section_Config, err = cfg.NewSection("Config"); err != nil {
 		panic(err)
@@ -104,16 +105,68 @@ func WriteIniConfig(filePath string, ReadedFile *Response) error {
 func GetFileType(filePath string) (string, error) {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
-	var jsonData interface{}
+	var jsonData Response
 	err = json.Unmarshal(content, &jsonData)
 	if err == nil {
 		return "json", nil
 	}
-	_, err = ini.LoadSources(ini.LoadOptions{AllowShadows: true}, strings.NewReader(string(content)))
-	if err == nil {
+	var cfg *ini.File
+	if cfg, err = ini.Load(filePath); err != nil {
+		panic(err)
+	}
+	section := cfg.Section("Account")
+	if id := section.Key("ID").String(); id != "" {
 		return "ini", nil
 	}
 	panic("File type not supported")
+}
+
+func ConvertIniToJson(filePath string) error {
+	var err error
+	var token, id string
+	if token, id, err = IniGetTokenID(filePath); err != nil {
+		panic(err)
+	}
+	jsonFilePath := strings.Replace(filePath, ".ini", ".json", 1)
+	if err = os.WriteFile(jsonFilePath, []byte(`{"id":"`+id+`","token":"`+token+`"}`), 0600); err != nil {
+		panic(err)
+	}
+	if UpdateConfigFile(jsonFilePath); err != nil {
+		panic(err)
+	}
+	os.Chmod(jsonFilePath, 0600)
+	var ReadedFile Response
+	if err = json.Unmarshal(ReadConfig(jsonFilePath), &ReadedFile); err != nil {
+		panic(err)
+	}
+	var cfg *ini.File
+	if cfg, err = ini.Load(filePath); err != nil {
+		panic(err)
+	}
+	section_Config := cfg.Section("Config")
+	ReadedFile.Config.PrivateKey = section_Config.Key("PrivateKey").String()
+	ReadedFile.Config.ClientID = section_Config.Key("ClientID").String()
+	ReadedFile.Config.ReservedHex = section_Config.Key("ReservedHex").String()
+	str := strings.Trim(section_Config.Key("ReservedDec").String(), "[]")
+	strSlice := strings.Split(str, ",")
+	intSlice := make([]int, len(strSlice))
+	for i, s := range strSlice {
+		s = strings.TrimSpace(s)
+		num, err := strconv.Atoi(s)
+		if err != nil {
+			panic(err)
+		}
+		intSlice[i] = num
+	}
+	ReadedFile.Config.ReservedDec = intSlice
+	var updatedContent []byte
+	if updatedContent, err = json.MarshalIndent(ReadedFile, "", "    "); err != nil {
+		panic(err)
+	}
+	if err = os.WriteFile(jsonFilePath, updatedContent, 0600); err != nil {
+		panic(err)
+	}
+	return err
 }

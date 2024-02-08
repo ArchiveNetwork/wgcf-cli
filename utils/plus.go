@@ -21,7 +21,7 @@ func Plus(filePath string, test bool) error {
 		if _, id, err = GetTokenID(filePath); err != nil {
 			panic(err)
 		}
-	} else {
+	} else if fileType == "ini" && err == nil {
 		if _, id, err = IniGetTokenID(filePath); err != nil {
 			panic(err)
 		}
@@ -45,7 +45,7 @@ func Plus(filePath string, test bool) error {
 		fmt.Println("Updating config file...")
 		if fileType, err := GetFileType(filePath); fileType == "json" && err == nil {
 			UpdateConfigFile(filePath)
-		} else {
+		} else if fileType == "ini" && err == nil {
 			UpdateIniConfig(filePath)
 		}
 		fmt.Println("Updated config file successfully")
@@ -58,7 +58,7 @@ func Plus(filePath string, test bool) error {
 			if i := currentStep % 10; i == 0 {
 				if fileType, err := GetFileType(filePath); fileType == "json" && err == nil {
 					UpdateConfigFile(filePath)
-				} else {
+				} else if fileType == "ini" && err == nil {
 					UpdateIniConfig(filePath)
 				}
 			}

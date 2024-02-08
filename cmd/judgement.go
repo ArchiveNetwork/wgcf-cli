@@ -19,8 +19,6 @@ func Judgement() error {
 		if fileType, err = utils.GetFileType(action.FileName); err != nil {
 			panic(err)
 		}
-	} else {
-		fileType = "ini"
 	}
 
 	if len(os.Args) == 1 {
@@ -312,8 +310,11 @@ func Judgement() error {
 				panic(err)
 			}
 		} else if fileType == "ini" {
-			println("The file is already in ini format")
-			return nil
+			if err = utils.ConvertIniToJson(action.FileName); err != nil {
+				panic(err)
+			}
+		} else {
+			panic("You need to specify a file to convert")
 		}
 		println("Converted config file successfully")
 		return nil
