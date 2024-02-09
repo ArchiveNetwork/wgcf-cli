@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -130,15 +131,19 @@ func ConvertIniToJson(filePath string) error {
 		panic(err)
 	}
 	jsonFilePath := strings.Replace(filePath, ".ini", ".json", 1)
-	if err = os.WriteFile(jsonFilePath, []byte(`{"id":"`+id+`","token":"`+token+`"}`), 0600); err != nil {
+	tmpPath := os.TempDir() + "/tmp." + filePath
+	if runtime.GOOS == "windows" {
+		tmpPath = os.TempDir() + "\\tmp." + filePath
+	}
+	defer os.Remove(tmpPath)
+	if err = os.WriteFile(tmpPath, []byte(`{"id":"`+id+`","token":"`+token+`"}`), 0600); err != nil {
 		panic(err)
 	}
-	if UpdateConfigFile(jsonFilePath); err != nil {
+	if err = UpdateConfigFile(tmpPath); err != nil {
 		panic(err)
 	}
-	os.Chmod(jsonFilePath, 0600)
 	var ReadedFile Response
-	if err = json.Unmarshal(ReadConfig(jsonFilePath), &ReadedFile); err != nil {
+	if err = json.Unmarshal(ReadConfig(tmpPath), &ReadedFile); err != nil {
 		panic(err)
 	}
 	var cfg *ini.File

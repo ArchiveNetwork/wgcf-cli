@@ -15,12 +15,6 @@ func Judgement() error {
 	var store []byte
 	var config, token, id, reserved, output, fileType string
 
-	if _, err := os.Stat(action.FileName); err == nil {
-		if fileType, err = utils.GetFileType(action.FileName); err != nil {
-			panic(err)
-		}
-	}
-
 	if len(os.Args) == 1 {
 		flag.Usage()
 		return nil
@@ -96,9 +90,19 @@ func Judgement() error {
 	}
 
 	if action.FileName == "" {
-		action.FileName = "wgcf." + fileType
+		if _, err := os.Stat("wgcf.ini"); err == nil {
+			action.FileName = "wgcf.ini"
+		} else if _, err := os.Stat("wgcf.json"); err == nil {
+			action.FileName = "wgcf.json"
+		}
 	} else if strings.HasPrefix(action.FileName, "-") {
 		panic(`The parameter must not start with "-"`)
+	}
+
+	if _, err := os.Stat(action.FileName); err == nil {
+		if fileType, err = utils.GetFileType(action.FileName); err != nil {
+			panic(err)
+		}
 	}
 
 	if !action.Bind && !action.UnBind && !action.Cancel && action.License == "" && action.Name == "" && action.Generate == "" && !action.Plus && !action.Version && !action.Update && !action.Convert {
