@@ -13,6 +13,10 @@ PREFIX=~/.local bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```bash
 sudo bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
+- Also, `BETA` Environment is available
+```bash
+BETA=true bash -c "$(curl -L wgcf-cli.vercel.app)"
+```
 ## Example 
 1. Register
 ```console

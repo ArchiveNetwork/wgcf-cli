@@ -102,8 +102,14 @@ install_software() {
 }
 install_software 'unzip' 'unzip'
 ZIP_FILE="wgcf-cli.zip"
-curl -Lo $ZIP_FILE https://github.com/ArchiveNetwork/wgcf-cli/releases/latest/download/wgcf-cli-${OS}-${MACHINE}.zip
-curl -Lo $ZIP_FILE.dgst https://github.com/ArchiveNetwork/wgcf-cli/releases/latest/download/wgcf-cli-${OS}-${MACHINE}.zip.dgst
+if [[ "$BETA" == 'true' ]]; then
+    TAG=$(curl https://api.github.com/repos/ArchiveNetwork/wgcf-cli/releases | grep "releases/tag" | grep -oP "v\d+\.\d+\.\d+(-|)(alpha|beta|rc|)(\.\d+|)" | head -1)
+    curl -Lo $ZIP_FILE https://github.com/ArchiveNetwork/wgcf-cli/releases/download/$TAG/wgcf-cli-${OS}-${MACHINE}.zip
+    curl -Lo $ZIP_FILE.dgst https://github.com/ArchiveNetwork/wgcf-cli/releases/download/$TAG/wgcf-cli-${OS}-${MACHINE}.zip.dgst
+else
+    curl -Lo $ZIP_FILE https://github.com/ArchiveNetwork/wgcf-cli/releases/latest/download/wgcf-cli-${OS}-${MACHINE}.zip
+    curl -Lo $ZIP_FILE.dgst https://github.com/ArchiveNetwork/wgcf-cli/releases/latest/download/wgcf-cli-${OS}-${MACHINE}.zip.dgst
+fi
 if [[ $(<$ZIP_FILE.dgst) == 'Not Found' ]]; then
     echo -e "error: No such a version or machine type in release."
     exit 1

@@ -16,7 +16,10 @@ PREFIX="~/.local" bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```bash
 sudo bash -c "$(curl -L wgcf-cli.vercel.app)"
 ```
-
+- Also, `BETA` Environment is available
+```bash
+BETA=true bash -c "$(curl -L wgcf-cli.vercel.app)"
+```
 ## endpoint.sh
 - Auto endpoint choose script.
 - It **only used** to test the connectivity of the endpoint.
