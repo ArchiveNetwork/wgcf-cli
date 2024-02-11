@@ -11,9 +11,9 @@ import (
 	"github.com/go-ini/ini"
 )
 
-func ConvertJsonToIni(filePath string) error {
+func ConvertJsonToIni(filePath string, fileType string) error {
 	var err error
-	if err = WriteIniConfig(filePath, nil); err != nil {
+	if err = WriteIniConfig(filePath, nil, fileType); err != nil {
 		panic(err)
 	}
 	return err
@@ -47,22 +47,18 @@ func UpdateIniConfig(filePath string) error {
 		panic(err)
 	}
 	ReadedFile.Token = token
-	if err = WriteIniConfig(filePath, &ReadedFile); err != nil {
+	if err = WriteIniConfig(filePath, &ReadedFile, "ini"); err != nil {
 		panic(err)
 	}
 
 	return nil
 }
 
-func WriteIniConfig(filePath string, ReadedFile *Response) error {
+func WriteIniConfig(filePath string, ReadedFile *Response, fileType string) error {
 	var err error
 	var section_Account, section_Usage, section_Config *ini.Section
 	var body []byte
 	var cfg *ini.File
-	var fileType string
-	if fileType, err = GetFileType(filePath); err != nil {
-		panic(err)
-	}
 	if fileType == "ini" {
 		if cfg, err = ini.Load(filePath); err != nil {
 			panic(err)
@@ -70,11 +66,13 @@ func WriteIniConfig(filePath string, ReadedFile *Response) error {
 		section_Config = cfg.Section("Config")
 		ReadedFile.Config.ReservedDec, ReadedFile.Config.ReservedHex = clientIDtoReserved(section_Config.Key("ClientID").String())
 		ReadedFile.Config.PrivateKey = section_Config.Key("PrivateKey").String()
-	} else {
+	} else if fileType == "json" {
 		body = ReadConfig(filePath)
 		if err = json.Unmarshal(body, &ReadedFile); err != nil {
 			panic(err)
 		}
+	} else {
+		panic("No file type detected")
 	}
 
 	cfg = ini.Empty()

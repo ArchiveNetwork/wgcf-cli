@@ -100,7 +100,7 @@ func Help() {
 	fmt.Fprintf(os.Stderr, `Usage:	%s [Options]
 Options:    -h/--help                             Show help
             -V/--version                          Show version
-            -f/--file [string]                    Configuration file (default "wgcf.json")
+            -f/--file [string]                    Configuration file (default "wgcf.ini")
             -r/--register                         Register an account
             -t/--token [string]                   Team token (must be used with -r/--register)
             -b/--bind                             Get the account binding devices
@@ -111,7 +111,7 @@ Options:    -h/--help                             Show help
             -g/--generate [sing-box/wg/xray]      Generate a [sing-box/wg/xray] configuration file
             -p/--plus                             Recharge your account indefinitely
             -u/--update                           Update the configuration file
-            -c/--convert                           Convert the configuration file from json to ini
+            -c/--convert                          Convert the configuration file
 `, os.Args[0])
 }
 

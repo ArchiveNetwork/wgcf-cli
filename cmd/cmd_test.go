@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 	if err = os.WriteFile(action.FileName, store, 0600); err != nil {
 		panic(err)
 	}
-	if err = utils.ConvertJsonToIni(action.FileName); err != nil {
+	if err = utils.ConvertJsonToIni(action.FileName, "json"); err != nil {
 		panic(err)
 	}
 
@@ -49,7 +49,7 @@ func TestMain(m *testing.M) {
 	if err = os.WriteFile("test.json", store, 0600); err != nil {
 		panic(err)
 	}
-	if err = utils.ConvertJsonToIni("test.json"); err != nil {
+	if err = utils.ConvertJsonToIni("test.json", "json"); err != nil {
 		panic(err)
 	}
 

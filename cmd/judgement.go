@@ -49,7 +49,7 @@ func Judgement() error {
 				if err = os.WriteFile(action.FileName, store, 0600); err != nil {
 					panic(err)
 				}
-				if err = utils.ConvertJsonToIni(action.FileName); err != nil {
+				if err = utils.ConvertJsonToIni(action.FileName, fileType); err != nil {
 					panic(err)
 				}
 			} else {
@@ -75,7 +75,7 @@ func Judgement() error {
 			if err = os.WriteFile(fileName, store, 0600); err != nil {
 				panic(err)
 			}
-			if err = utils.ConvertJsonToIni(fileName); err != nil {
+			if err = utils.ConvertJsonToIni(fileName, "json"); err != nil {
 				panic(err)
 			}
 			return nil
@@ -310,7 +310,7 @@ func Judgement() error {
 	}
 	if action.Convert {
 		if fileType == "json" {
-			if err = utils.ConvertJsonToIni(action.FileName); err != nil {
+			if err = utils.ConvertJsonToIni(action.FileName, fileType); err != nil {
 				panic(err)
 			}
 		} else if fileType == "ini" {
