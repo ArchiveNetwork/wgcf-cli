@@ -2,10 +2,6 @@ name: Build and Release
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: [Create release]
-    types:
-      - completed
   release:
     types: [published]
   push:
@@ -13,9 +9,9 @@ on:
     branches:
       - master
     paths:
-#      - "**/*.go"
-#      - "go.mod"
-#      - "go.sum"
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
       - ".github/workflows/build.yml"
   pull_request:
     types: [opened, synchronize, reopened]
@@ -27,27 +23,30 @@ on:
 jobs:
   release:
     name: Release pushed tag
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
+
+      - name: Check release type
+        if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
+        run: |
+            if echo ${{ github.ref_name }} | grep -qP '(alpha|beta|rc)'; then
+              echo pre-release=true >> $GITHUB_ENV
+            else
+              echo pre-release=false >> $GITHUB_ENV
+            fi
 
       - name: Get change log
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
         run: |
             git fetch --unshallow
-            LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
-            git log --format="- %h%n%s%n%b" $LAST_TAG...HEAD > changelog.md
-
-      - name: Check release type
-        if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
-        run: |
-            if echo ${{ github.ref_name }} | grep -qP '(alpha|beta|rc)'
-            then
-            echo pre-release=true >> $GITHUB_ENV
+            if [[ "${{ env.pre-release }}" == true ]]; then
+              LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
             else
-            echo pre-release=false >> $GITHUB_ENV
+              LAST_TAG=$(git tag --sort=-v:refname | grep -vE "alpha|beta|rc" | grep -v "${{ github.ref_name }}" | head -1)
             fi
+            git log --format="- %h%n%s%n%b" $LAST_TAG...HEAD > changelog.md
 
       - name: Create release
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
