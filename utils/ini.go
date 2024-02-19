@@ -81,11 +81,14 @@ func WriteIniConfig(filePath string, ReadedFile *Response, fileType string) erro
 	}
 	section_Account.NewKey("ID", ReadedFile.ID)
 	section_Account.NewKey("Token", ReadedFile.Token)
-	if section_Usage, err = cfg.NewSection("Usage"); err != nil {
-		panic(err)
+	section_Account.NewKey("Type", ReadedFile.Account.AccountType)
+	if section_Account.Key("Type").String() != "team" {
+		if section_Usage, err = cfg.NewSection("Usage"); err != nil {
+			panic(err)
+		}
+		section_Usage.NewKey("PremiumData", fmt.Sprint(float32(ReadedFile.Account.PremiumData)/1000/1000/1000, "GB"))
+		section_Usage.NewKey("License", fmt.Sprint(ReadedFile.Account.License))
 	}
-	section_Usage.NewKey("PremiumData", fmt.Sprint(float32(ReadedFile.Account.PremiumData)/1000/1000/1000, "GB"))
-	section_Usage.NewKey("License", fmt.Sprint(ReadedFile.Account.License))
 	if section_Config, err = cfg.NewSection("Config"); err != nil {
 		panic(err)
 	}

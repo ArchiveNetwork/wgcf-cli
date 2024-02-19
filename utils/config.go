@@ -37,24 +37,6 @@ type singBox struct {
 	MTU           int      `json:"mtu"`
 }
 
-type Wireguard struct {
-	Reserved  string `conf:"Reserved,omitempty"`
-	Interface struct {
-		PrivateKey string   `conf:"PrivateKey"`
-		Address    []string `conf:"Address"`
-		MTU        int      `conf:"MTU"`
-		PostUp     string   `conf:"PostUp"`
-		PostDown   []string `conf:"PostDown"`
-		Table      int      `conf:"Table"`
-		PreUp      []string `conf:"PreUp"`
-	} `conf:"Interface"`
-	Peer struct {
-		PublicKey  string `conf:"PublicKey"`
-		AllowedIPs string `conf:"AllowedIPs"`
-		Endpoint   string `conf:"Endpoint"`
-	} `conf:"Peer"`
-}
-
 func ConfigGenerate(generateType string, filePath string) (string, string, error) {
 	var err error
 	var content []byte
@@ -108,7 +90,7 @@ func ConfigGenerate(generateType string, filePath string) (string, string, error
 				MTU      int   `json:"mtu"`
 			}{
 				SecretKey: ReadedFile.Config.PrivateKey,
-				Address:   []string{"172.16.0.2/32", ReadedFile.Config.Interface.Addresses.V6 + "/128"},
+				Address:   []string{ReadedFile.Config.Interface.Addresses.V4 + "/32", ReadedFile.Config.Interface.Addresses.V6 + "/128"},
 				Peers: []struct {
 					PublicKey  string   `json:"publicKey"`
 					AllowedIPs []string `json:"allowedIPs"`
@@ -132,72 +114,40 @@ func ConfigGenerate(generateType string, filePath string) (string, string, error
 		return fmt.Sprintf((string(config) + "\n")), "", nil
 
 	} else if generateType == "wireguard" {
-		input := Wireguard{
-			Reserved: ReadedFile.Config.ReservedHex,
-			Interface: struct {
-				PrivateKey string   `conf:"PrivateKey"`
-				Address    []string `conf:"Address"`
-				MTU        int      `conf:"MTU"`
-				PostUp     string   `conf:"PostUp"`
-				PostDown   []string `conf:"PostDown"`
-				Table      int      `conf:"Table"`
-				PreUp      []string `conf:"PreUp"`
-			}{
-				PrivateKey: ReadedFile.Config.PrivateKey,
-				Address:    []string{ReadedFile.Config.Interface.Addresses.V6 + "/128", "172.16.0.2/32"},
-				MTU:        1280,
-				PostUp:     "nft -f /etc/wireguard/wgcf.nft.conf",
-				PostDown:   []string{"nft delete table inet wgcf", "ip rule del oif %i lookup 300", "ip -6 rule del oif %i lookup 300"},
-				Table:      300,
-				PreUp:      []string{"ip rule add oif %i lookup 300", "ip -6 rule add oif %i lookup 300"},
-			},
-			Peer: struct {
-				PublicKey  string `conf:"PublicKey"`
-				AllowedIPs string `conf:"AllowedIPs"`
-				Endpoint   string `conf:"Endpoint"`
-			}{
-				PublicKey:  "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-				AllowedIPs: "::/0, 0.0.0.0/0",
-				Endpoint:   "162.159.193.199:2408",
-			},
-		}
 		config := fmt.Sprintf(`
 [Interface]
-PrivateKey = %s
-Address = %s
-Address = %s
-MTU = %d
+PrivateKey = `+ReadedFile.Config.PrivateKey+`
+Address = `+ReadedFile.Config.Interface.Addresses.V4+`
+Address = `+ReadedFile.Config.Interface.Addresses.V6+`
+MTU = 1280
 
-Table = %d
+PreUp = ip rule add oif %s lookup 300
+PostDown = ip rule del oif %s lookup 300
+PreUp = ip -6 rule add oif %s lookup 300
+PostDown = ip -6 rule del oif %s lookup 300
 
-PreUp = %s
-PostDown = %s
-PreUp = %s
-PostDown = %s
-PostUp = %s
-PostDown = %s
-	
+PreUp = ip rule add fwmark 32975 lookup 300
+PostDown = ip rule del fwmark 32975 lookup 300
+PreUp = ip -6 rule add fwmark 32975 lookup 300
+PostDown = ip -6 rule del fwmark 32975 lookup 300
+
+#PreUp = ip rule add from `+ReadedFile.Config.Interface.Addresses.V4+`/32 lookup 300
+#PostDown = ip rule del from `+ReadedFile.Config.Interface.Addresses.V4+`/32 lookup 300
+#PreUp = ip -6 rule add from `+ReadedFile.Config.Interface.Addresses.V6+`/128 lookup 300
+#PostDown = ip -6 rule del from `+ReadedFile.Config.Interface.Addresses.V6+`/128 lookup 300
+# Alternative
+
+PostUp = iptables -t mangle -A OUTPUT -s `+ReadedFile.Config.Interface.Addresses.V4+` -j MARK --set-mark 32975
+PreDown = iptables -t mangle -D OUTPUT -s `+ReadedFile.Config.Interface.Addresses.V4+` -j MARK --set-mark 32975
+PostUp = ip6tables -t mangle -A OUTPUT -s `+ReadedFile.Config.Interface.Addresses.V6+` -j MARK --set-mark 32975
+PreDown = ip6tables -t mangle -D OUTPUT -s `+ReadedFile.Config.Interface.Addresses.V6+` -j MARK --set-mark 32975
+
 [Peer]
-PublicKey = %s
-AllowedIPs = %v
-Endpoint = %s
-`,
-			input.Interface.PrivateKey,
-			input.Interface.Address[0],
-			input.Interface.Address[1],
-			input.Interface.MTU,
-			input.Interface.Table,
-			input.Interface.PreUp[0],
-			input.Interface.PostDown[1],
-			input.Interface.PreUp[1],
-			input.Interface.PostDown[2],
-			input.Interface.PostUp,
-			input.Interface.PostDown[0],
-			input.Peer.PublicKey,
-			input.Peer.AllowedIPs,
-			input.Peer.Endpoint,
-		)
-		return config, input.Reserved, nil
+PublicKey = `+"bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="+`
+AllowedIPs = 0.0.0.0/0, ::/0
+Endpoint = 162.159.193.199:2408
+`, "%i", "%i", "%i", "%i")
+		return config, ReadedFile.Config.ReservedHex, nil
 	} else if generateType == "sing-box" {
 		input := singBox{
 			Type:          "wireguard",
