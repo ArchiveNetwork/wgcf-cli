@@ -117,8 +117,8 @@ func ConfigGenerate(generateType string, filePath string) (string, string, error
 		config := fmt.Sprintf(`
 [Interface]
 PrivateKey = `+ReadedFile.Config.PrivateKey+`
-Address = `+ReadedFile.Config.Interface.Addresses.V4+`
-Address = `+ReadedFile.Config.Interface.Addresses.V6+`
+Address = `+ReadedFile.Config.Interface.Addresses.V4+`/32
+Address = `+ReadedFile.Config.Interface.Addresses.V6+`/128
 MTU = 1280
 
 PreUp = ip rule add oif %s lookup 300
