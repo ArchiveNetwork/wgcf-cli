@@ -26,7 +26,6 @@ func Plus(filePath string, test bool) error {
 			panic(err)
 		}
 	}
-
 	go func() {
 		signalCh := make(chan os.Signal, 1)
 		signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
@@ -52,18 +51,20 @@ func Plus(filePath string, test bool) error {
 		os.Exit(0)
 	}()
 
-	go func() {
-		for {
-			time.Sleep(100 * time.Millisecond)
-			if i := currentStep % 10; i == 0 {
-				if fileType, err := GetFileType(filePath); fileType == "json" && err == nil {
-					UpdateConfigFile(filePath)
-				} else if fileType == "ini" && err == nil {
-					UpdateIniConfig(filePath)
+	if !test {
+		go func() {
+			for {
+				time.Sleep(100 * time.Millisecond)
+				if i := currentStep % 10; i == 0 {
+					if fileType, err := GetFileType(filePath); fileType == "json" && err == nil {
+						UpdateConfigFile(filePath)
+					} else if fileType == "ini" && err == nil {
+						UpdateIniConfig(filePath)
+					}
 				}
 			}
-		}
-	}()
+		}()
+	}
 
 	for {
 		time.Sleep(500 * time.Millisecond)
