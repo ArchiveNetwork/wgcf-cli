@@ -159,7 +159,7 @@ jobs:
             ./wgcf-cli-${{ env.ASSET_NAME }}/*
 
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@1beeb572c19a9242f4361f4cee78f8e0d9aec5df # v2
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         if: github.event_name == 'release' || (github.event_name == 'push' && (contains(github.ref, 'refs/tags/')))
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
