@@ -1,0 +1,5 @@
+*.json
+*.conf
+*.ini
+/wgcf-cli*
+/build_assets
