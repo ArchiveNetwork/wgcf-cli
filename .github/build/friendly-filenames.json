@@ -1,0 +1,13 @@
+{
+  "android-arm64": { "friendlyName": "android-arm64-v8a" },
+  "darwin-amd64": { "friendlyName": "macos-64" },
+  "darwin-arm64": { "friendlyName": "macos-arm64-v8a" },
+  "linux-386": { "friendlyName": "linux-32" },
+  "linux-amd64": { "friendlyName": "linux-64" },
+  "linux-arm64": { "friendlyName": "linux-arm64-v8a" },
+  "linux-arm7": { "friendlyName": "linux-arm32-v7a" },
+  "windows-386": { "friendlyName": "windows-32" },
+  "windows-amd64": { "friendlyName": "windows-64" },
+  "windows-arm64": { "friendlyName": "windows-arm64-v8a" },
+  "windows-arm7": { "friendlyName": "windows-arm32-v7a" }
+}
