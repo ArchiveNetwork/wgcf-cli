@@ -1,7 +1,7 @@
 # wgcf-cli
 A command-line tool for Cloudflare-WARP API, built using Cobra.<br>
 Thanks: [@fscarmen](https://github.com/fscarmen/), [fscarmen/warp](https://gitlab.com/fscarmen/warp/), [@badafans](https://github.com/badafans), [badafans/warp-reg](https://github.com/badafans/warp-reg)<br>
-## Example 
+
 ```
 ❯ wgcf-cli 
 A command-line tool for Cloudflare-WARP API, built using Cobra.
@@ -10,16 +10,17 @@ Usage:
   wgcf-cli [command]
 
 Available Commands:
-  bind        check current bind devices
-  cancel      cancel a config from original one
+  bind        Check current bind devices
+  cancel      Cancel a account
   completion  Generate the autocompletion script for the specified shell
+  generate    Generate a xray/sing-box config
   help        Help about any command
-  license     change to a new license
-  name        change the device name
+  license     Change to a new license
+  name        Change the device name
   register    Register a new WARP account
   simplify    Simplify a config from original one
-  unbind      unbind from original license
-  update      update a config
+  unbind      Unbind from original license
+  update      Update a config
   version     Print the version of wgcf-cli
 
 Flags:
