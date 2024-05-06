@@ -41,10 +41,11 @@ func unbind(cmd *cobra.Command, args []string) {
 	}
 
 	var client utils.HTTPClient
-	_, err = client.Do(requset)
-	if err != nil {
+	if _, err = client.Do(requset); err != nil {
+		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
+
 	fmt.Printf("unbinded account (ID: %s) successfully\n", id)
 }

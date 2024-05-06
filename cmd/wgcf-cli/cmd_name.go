@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -45,15 +43,12 @@ func change_name(cmd *cobra.Command, args []string) {
 	}
 
 	var client utils.HTTPClient
-	body, err := client.Do(requset)
-	if err != nil {
+
+	if _, err := client.Do(requset); err != nil {
+		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
-	var buffer bytes.Buffer
-	if err = json.Indent(&buffer, body, "", "    "); err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-		os.Exit(1)
-	}
+	client.HandleBody()
 	fmt.Printf("Name changed to %s\n", name)
 }

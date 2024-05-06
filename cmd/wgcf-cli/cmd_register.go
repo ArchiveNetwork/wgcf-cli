@@ -59,6 +59,7 @@ func register(cmd *cobra.Command, args []string) {
 	var client utils.HTTPClient
 	body, err := client.Do(request)
 	if err != nil {
+		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
@@ -72,15 +73,14 @@ func register(cmd *cobra.Command, args []string) {
 	resStruct.Config.PrivateKey = privateKey
 	utils.SimplifyOutput(resStruct)
 
-	if configPath != "" {
-		store, err := json.MarshalIndent(resStruct, "", "    ")
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error:", err)
-			os.Exit(1)
-		}
-		if err = os.WriteFile(configPath, store, 0600); err != nil {
-			fmt.Fprintln(os.Stderr, "Error:", err)
-			os.Exit(1)
-		}
+	store, err := json.MarshalIndent(resStruct, "", "    ")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
 	}
+	if err = os.WriteFile(configPath, store, 0600); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
+
 }

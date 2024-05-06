@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -35,15 +33,10 @@ func bind(cmd *cobra.Command, args []string) {
 	}
 
 	var client utils.HTTPClient
-	var buffer bytes.Buffer
-	var body []byte
-	if body, err = client.Do(request); err != nil {
+	if _, err := client.Do(request); err != nil {
+		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
-	if err = json.Indent(&buffer, body, "", "    "); err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-		os.Exit(1)
-	}
-	fmt.Println(buffer.String())
+	client.HandleBody()
 }

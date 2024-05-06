@@ -11,7 +11,9 @@ import (
 	"os"
 )
 
-type HTTPClient struct{}
+type HTTPClient struct {
+	body []byte
+}
 
 func (h *HTTPClient) Do(request *http.Request) (body []byte, err error) {
 	var proxy string
@@ -52,13 +54,21 @@ func (h *HTTPClient) Do(request *http.Request) (body []byte, err error) {
 	}
 
 	if response.StatusCode != 204 && response.StatusCode != 200 {
-		var buffer bytes.Buffer
-		if err = json.Indent(&buffer, body, "", "    "); err != nil {
-			fmt.Println(string(body))
-		} else {
-			fmt.Println(buffer.String())
-		}
-		err = fmt.Errorf("REST API returned " + fmt.Sprint(response.StatusCode) + " " + http.StatusText(response.StatusCode))
+		err = fmt.Errorf("REST API returned %d %s", response.StatusCode, http.StatusText(response.StatusCode))
 	}
+	h.body = body
 	return
+}
+
+func (h *HTTPClient) HandleBody() {
+	var buffer bytes.Buffer
+	if err := json.Indent(&buffer, h.body, "", "    "); err != nil {
+		fmt.Fprint(os.Stderr, string(h.body))
+	} else {
+		output := buffer.Bytes()
+		if output[len(output)-1] != '\n' {
+			output = append(output, '\n')
+		}
+		fmt.Fprint(os.Stderr, string(output))
+	}
 }

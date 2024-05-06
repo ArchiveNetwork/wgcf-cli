@@ -54,6 +54,7 @@ func update(cmd *cobra.Command, args []string) {
 
 	var client utils.HTTPClient
 	if body, err = client.Do(request); err != nil {
+		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
@@ -76,4 +77,5 @@ func update(cmd *cobra.Command, args []string) {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
+	fmt.Printf("Updated configuration file (ID: %s) successfully\n", id)
 }

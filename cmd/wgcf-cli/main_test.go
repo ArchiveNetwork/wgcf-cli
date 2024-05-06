@@ -48,7 +48,12 @@ func TestRootCmd(t *testing.T) {
 	rootCmd.SetArgs([]string{"license", "-l", getLicense()})
 	must(rootCmd.Execute())
 
-	rootCmd.SetArgs([]string{"cancel", "--yes"})
+	rootCmd.SetArgs([]string{"generate", "--sing-box"})
 	must(rootCmd.Execute())
 
+	rootCmd.SetArgs([]string{"generate", "--xray"})
+	must(rootCmd.Execute())
+
+	rootCmd.SetArgs([]string{"cancel", "--yes"})
+	must(rootCmd.Execute())
 }
