@@ -10,7 +10,7 @@ import (
 
 var unbindCmd = &cobra.Command{
 	Use:     "unbind",
-	Short:   "unbind from original license",
+	Short:   "Unbind from original license",
 	Run:     unbind,
 	PostRun: update,
 }

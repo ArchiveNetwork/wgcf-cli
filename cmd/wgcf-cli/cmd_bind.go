@@ -10,7 +10,7 @@ import (
 
 var bindCmd = &cobra.Command{
 	Use:     "bind",
-	Short:   "check current bind devices",
+	Short:   "Check current bind devices",
 	Run:     bind,
 	PostRun: update,
 }

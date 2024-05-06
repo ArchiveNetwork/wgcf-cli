@@ -10,7 +10,7 @@ import (
 
 var licenseCmd = &cobra.Command{
 	Use:     "license",
-	Short:   "change to a new license",
+	Short:   "Change to a new license",
 	Run:     change_license,
 	PostRun: update,
 }

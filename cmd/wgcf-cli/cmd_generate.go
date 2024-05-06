@@ -13,7 +13,7 @@ import (
 
 var generateCmd = &cobra.Command{
 	Use:       "generate",
-	Short:     "generate a config from original one",
+	Short:     "Generate a xray/sing-box config",
 	Run:       generate,
 	Args:      cobra.OnlyValidArgs,
 	ValidArgs: []string{"xray", "sing-box"},

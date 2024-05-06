@@ -10,7 +10,7 @@ import (
 
 var cancelCmd = &cobra.Command{
 	Use:   "cancel",
-	Short: "cancel a config from original one",
+	Short: "Cancel a account",
 	Run:   cancel,
 }
 

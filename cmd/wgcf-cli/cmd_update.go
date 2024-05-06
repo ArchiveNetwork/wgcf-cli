@@ -12,7 +12,7 @@ import (
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "update a config",
+	Short: "Update a config",
 	Run:   update,
 }
 

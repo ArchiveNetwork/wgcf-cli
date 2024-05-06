@@ -10,7 +10,7 @@ import (
 
 var nameCmd = &cobra.Command{
 	Use:     "name",
-	Short:   "change the device name",
+	Short:   "Change the device name",
 	Run:     change_name,
 	PostRun: update,
 }
