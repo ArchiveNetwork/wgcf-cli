@@ -36,7 +36,7 @@ make
 - Available environment variable:
 1. `GOFLAGS`, Default: 
 ```bash
--trimpath -ldflags "-X github.com/ArchiveNetwork/wgcf-cli/constant.Version=$(VERSION) -s -w -buildid=" -v
+-trimpath -mod=readonly -modcacherw -v -ldflags "$(LDFLAGS)"
 ```
 2. `PREFIX`, Default: 
 ```bash
