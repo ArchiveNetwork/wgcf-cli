@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	C "github.com/ArchiveNetwork/wgcf-cli/constant"
@@ -12,9 +13,10 @@ import (
 )
 
 var registerCmd = &cobra.Command{
-	Use:   "register",
-	Short: "Register a new WARP account",
-	Run:   register,
+	Use:    "register",
+	Short:  "Register a new WARP account",
+	PreRun: pre_register,
+	Run:    register,
 }
 
 var (
@@ -26,11 +28,20 @@ func init() {
 	registerCmd.PersistentFlags().StringVarP(&teamToken, "token", "t", "", "set register ZeroTrust Token")
 }
 
-func register(cmd *cobra.Command, args []string) {
-	privateKey, publicKey, err := utils.GenerateKey()
-	if err != nil {
-		panic(err)
+func pre_register(cmd *cobra.Command, args []string) {
+	if _, err := os.Stat(configPath); !os.IsNotExist(err) {
+		var input string
+		fmt.Fprintf(os.Stderr, "Warn: File %s exist, are you sure to continue? [y/N]: ", configPath)
+		fmt.Scanln(&input)
+		input = strings.ToLower(input)
+		if input != "y" {
+			os.Exit(1)
+		}
 	}
+}
+
+func register(cmd *cobra.Command, args []string) {
+	privateKey, publicKey := utils.GenerateKey()
 
 	installID := utils.RandStringRunes(22, nil)
 	fcmtoken := utils.RandStringRunes(134, nil)

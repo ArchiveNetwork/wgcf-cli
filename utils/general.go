@@ -47,7 +47,7 @@ func RandStringRunes(n int, letterRunes []rune) string {
 	return string(randomRunes)
 }
 
-func GenerateKey() (string, string, error) {
+func GenerateKey() (string, string) {
 	var priv, pub []byte
 	var err error
 
@@ -63,5 +63,5 @@ func GenerateKey() (string, string, error) {
 		panic(err)
 	}
 
-	return base64.StdEncoding.EncodeToString(priv[:]), base64.StdEncoding.EncodeToString(pub[:]), nil
+	return base64.StdEncoding.EncodeToString(priv[:]), base64.StdEncoding.EncodeToString(pub[:])
 }
