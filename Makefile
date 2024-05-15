@@ -1,6 +1,6 @@
 NAME = wgcf-cli
 
-VERSION ?= $(shell git fetch --tags 1>&2; git describe --tags --always --dirty)
+VERSION ?= $(shell git describe --tags --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-\([^-]*\)-\([^-]*\)$$/.\1.\2/;s/-//')
 export CGO_ENABLED ?= 0
 ifeq ($(CGO_ENABLED),1)
 LDFLAG_LINKMODE = -linkmode=external
@@ -34,6 +34,7 @@ clean:
 	go clean -v -i $(MAIN)
 	rm -f $(OUTPUT)
 
-completion: $(NAME)
-	PATH=$(PATH):$(shell realpath ./)
-	$(NAME) completion $(completion)
+completion: 
+	@$(MAKE) $(NAME) 2>&1 >/dev/null
+	@PATH=$(PATH):$(shell realpath ./)
+	@$(NAME) completion $(completion)

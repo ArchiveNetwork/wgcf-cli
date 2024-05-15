@@ -24,29 +24,33 @@ jobs:
   release:
     name: Release pushed tag
     runs-on: ubuntu-latest
+    outputs:
+      pre_release: ${{ steps.check.outputs.pre-release }}
     steps:
       - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
 
       - name: Check release type
+        id: check
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
         run: |
             if echo ${{ github.ref_name }} | grep -qP '(alpha|beta|rc)'; then
-              echo pre-release=true >> $GITHUB_ENV
+              echo pre-release=true >> $GITHUB_OUTPUT
             else
-              echo pre-release=false >> $GITHUB_ENV
+              echo pre-release=false >> $GITHUB_OUTPUT
             fi
 
       - name: Get change log
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
         run: |
-            git fetch --unshallow
-            if [[ "${{ env.pre-release }}" == true ]]; then
+            git fetch --tags --unshallow
+            if [[ "${{ steps.check.outputs.pre-release }}" == true ]]; then
               LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
             else
               LAST_TAG=$(git tag --sort=-v:refname | grep -vE "alpha|beta|rc" | grep -v "${{ github.ref_name }}" | head -1)
             fi
             git log --format="- %h%n%s%n%b" $LAST_TAG...HEAD > changelog.md
+            echo **Full Changelog**: ${{ github.repository }}/compare/$LAST_TAG...${{ github.ref_name }} >> changelog.md
 
       - name: Create release
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
@@ -56,9 +60,8 @@ jobs:
             gh release create "${{ github.ref_name }}" \
               --repo="$GITHUB_REPOSITORY" \
               --title="${{ github.ref_name }}" \
-              $([[ ${{ env.pre-release }} == true ]] && echo --prerelease) \
+              $([[ ${{ steps.check.outputs.pre-release }} == true ]] && echo --prerelease) \
               -F changelog.md \
-              --generate-notes
               
   build:
     permissions:
@@ -106,7 +109,7 @@ jobs:
     steps:
       - name: Checkout codebase
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
-
+          
       - name: Show workflow information 
         run: |
           export _NAME=$(jq ".[\"$GOOS-$GOARCH$GOARM$GOMIPS\"].friendlyName" -r < .github/build/friendly-filenames.json)
@@ -125,6 +128,11 @@ jobs:
       - name: Build
         run: |
           mkdir -p build_assets
+          if ! [[ -z "${{ needs.release.outputs.pre_release }}" ]]; then
+            export VERSION=${{ github.ref_name }} 
+          else
+            git fetch --tags --unshallow
+          fi
           make
           find . -maxdepth 1 -type f -regex './wgcf-cli\(\|.exe\)' -exec mv {} ./build_assets/ \;
 
