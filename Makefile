@@ -1,12 +1,12 @@
 NAME = wgcf-cli
 MAIN = ./cmd/wgcf-cli
 
-VERSION ?= $(shell git describe --tags --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-\([^-]*\)-\([^-]*\)$$/.\1.\2/;s/-//')
+VERSION ?= v$(shell git describe --tags --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-\([^-]*\)-\([^-]*\)$$/.\1.\2/;s/-//')
 
 export GOOS ?= $(shell go env GOOS)
 export GOARCH ?= $(shell go env GOARCH)
 export GOARM ?= $(shell go env GOARM)
-export CGO_ENABLED ?= 0
+export CGO_ENABLED ?= $(shell go env CGO_ENABLED)
 BUILD_MODE = -buildmode=pie
 ifeq ($(CGO_ENABLED),1)
 LDFLAG_LINKMODE = -linkmode=external
