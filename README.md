@@ -17,6 +17,7 @@ Available Commands:
   help        Help about any command
   license     Change to a new license
   name        Change the device name
+  plus        Recharge your account indefinitely
   register    Register a new WARP account
   simplify    Simplify a config from original one
   unbind      Unbind from original license
@@ -36,10 +37,7 @@ make
 - Available environment variable:
 1. `GOFLAGS`, Default: 
 ```bash
--trimpath -mod=readonly -modcacherw -v -ldflags "$(LDFLAGS)"
+-trimpath $(BUILD_MODE) -tags=$(TAGS) -mod=readonly -modcacherw -v -ldflags "$(LDFLAGS)"
 ```
-2. `PREFIX`, Default: 
-```bash
-$(shell go env GOPATH)
-```
-3. `CGO_ENABLED`, Default: `0`
+2. `CGO_ENABLED`, Default: `0`
+3. `TAGS`, Default: ` `
