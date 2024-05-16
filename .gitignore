@@ -1,3 +1,4 @@
 wgcf*.json
+wgcf*.ini
 /wgcf-cli*
 /build_assets

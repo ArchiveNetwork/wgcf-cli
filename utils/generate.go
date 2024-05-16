@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
 	C "github.com/ArchiveNetwork/wgcf-cli/constant"
 )
@@ -41,12 +40,11 @@ func GenXray(resStruct C.Response) (body []byte, err error) {
 		Tag: "wireguard",
 	}
 
-	if body, err = json.MarshalIndent(in_struct, "", "    "); err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-		os.Exit(1)
-	}
+	body, err = json.MarshalIndent(in_struct, "", "    ")
+
 	return
 }
+
 func GenSing(resStruct C.Response) (body []byte, err error) {
 	in_struct := C.Sing{
 		Type:          "wireguard",
@@ -60,9 +58,46 @@ func GenSing(resStruct C.Response) (body []byte, err error) {
 		MTU:           1280,
 	}
 
-	if body, err = json.MarshalIndent(in_struct, "", "    "); err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-		os.Exit(1)
-	}
+	body, err = json.MarshalIndent(in_struct, "", "    ")
+	return
+}
+
+func GenWgQuick(resStruct C.Response) (body []byte, err error) {
+	in_str := fmt.Sprint(`
+[Interface]
+PrivateKey = ` + resStruct.Config.PrivateKey + `
+Address = ` + resStruct.Config.Interface.Addresses.V4 + `/32
+Address = ` + resStruct.Config.Interface.Addresses.V6 + `/128
+MTU = 1280
+
+Table = 300
+
+PreUp = ip rule add oif %i lookup 300
+PostDown = ip rule del oif %i lookup 300
+PreUp = ip -6 rule add oif %i lookup 300
+PostDown = ip -6 rule del oif %i lookup 300
+
+PreUp = ip rule add fwmark 32975 lookup 300
+PostDown = ip rule del fwmark 32975 lookup 300
+PreUp = ip -6 rule add fwmark 32975 lookup 300
+PostDown = ip -6 rule del fwmark 32975 lookup 300
+
+#PreUp = ip rule add from ` + resStruct.Config.Interface.Addresses.V4 + `/32 lookup 300
+#PostDown = ip rule del from ` + resStruct.Config.Interface.Addresses.V4 + `/32 lookup 300
+#PreUp = ip -6 rule add from ` + resStruct.Config.Interface.Addresses.V6 + `/128 lookup 300
+#PostDown = ip -6 rule del from ` + resStruct.Config.Interface.Addresses.V6 + `/128 lookup 300
+# Alternative
+
+PostUp = iptables -t mangle -A OUTPUT -s ` + resStruct.Config.Interface.Addresses.V4 + ` -j MARK --set-mark 32975
+PreDown = iptables -t mangle -D OUTPUT -s ` + resStruct.Config.Interface.Addresses.V4 + ` -j MARK --set-mark 32975
+PostUp = ip6tables -t mangle -A OUTPUT -s ` + resStruct.Config.Interface.Addresses.V6 + ` -j MARK --set-mark 32975
+PreDown = ip6tables -t mangle -D OUTPUT -s ` + resStruct.Config.Interface.Addresses.V6 + ` -j MARK --set-mark 32975
+
+[Peer]
+PublicKey = ` + resStruct.Config.Peers[0].PublicKey + `
+AllowedIPs = 0.0.0.0/0, ::/0
+Endpoint = ` + resStruct.Config.Peers[0].Endpoint.V4 + `
+`)
+	body = []byte(in_str)
 	return
 }
