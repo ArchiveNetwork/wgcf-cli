@@ -11,7 +11,10 @@ import (
 var cancelCmd = &cobra.Command{
 	Use:   "cancel",
 	Short: "Cancel a account",
-	Run:   cancel,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		client.New()
+	},
+	Run: cancel,
 }
 
 func init() {
@@ -34,7 +37,6 @@ func cancel(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	var client utils.HTTPClient
 	if _, err = client.Do(requset); err != nil {
 		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)

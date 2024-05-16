@@ -13,7 +13,10 @@ import (
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update a config",
-	Run:   update,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		client.New()
+	},
+	Run: update,
 }
 
 func init() {
@@ -52,7 +55,6 @@ func update(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	var client utils.HTTPClient
 	if body, err = client.Do(request); err != nil {
 		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)

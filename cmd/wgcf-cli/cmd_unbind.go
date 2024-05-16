@@ -9,8 +9,11 @@ import (
 )
 
 var unbindCmd = &cobra.Command{
-	Use:     "unbind",
-	Short:   "Unbind from original license",
+	Use:   "unbind",
+	Short: "Unbind from original license",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		client.New()
+	},
 	Run:     unbind,
 	PostRun: update,
 }
@@ -40,7 +43,6 @@ func unbind(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	var client utils.HTTPClient
 	if _, err = client.Do(requset); err != nil {
 		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)

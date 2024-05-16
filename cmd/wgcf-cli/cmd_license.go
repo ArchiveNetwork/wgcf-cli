@@ -9,8 +9,11 @@ import (
 )
 
 var licenseCmd = &cobra.Command{
-	Use:     "license",
-	Short:   "Change to a new license",
+	Use:   "license",
+	Short: "Change to a new license",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		client.New()
+	},
 	Run:     change_license,
 	PostRun: update,
 }
@@ -41,8 +44,6 @@ func change_license(cmd *cobra.Command, args []string) {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
-
-	var client utils.HTTPClient
 
 	if _, err := client.Do(requset); err != nil {
 		client.HandleBody()

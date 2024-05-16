@@ -9,8 +9,11 @@ import (
 )
 
 var nameCmd = &cobra.Command{
-	Use:     "name",
-	Short:   "Change the device name",
+	Use:   "name",
+	Short: "Change the device name",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		client.New()
+	},
 	Run:     change_name,
 	PostRun: update,
 }
@@ -41,8 +44,6 @@ func change_name(cmd *cobra.Command, args []string) {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
-
-	var client utils.HTTPClient
 
 	if _, err := client.Do(requset); err != nil {
 		client.HandleBody()

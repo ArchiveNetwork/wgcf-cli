@@ -12,10 +12,11 @@ import (
 )
 
 type HTTPClient struct {
-	body []byte
+	client *http.Client
+	body   []byte
 }
 
-func (h *HTTPClient) Do(request *http.Request) (body []byte, err error) {
+func (h *HTTPClient) New() {
 	var proxy string
 	httpProxy := os.Getenv("http_proxy")
 	httpsProxy := os.Getenv("https_proxy")
@@ -30,7 +31,7 @@ func (h *HTTPClient) Do(request *http.Request) (body []byte, err error) {
 		os.Exit(1)
 	}
 
-	client := &http.Client{
+	h.client = &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				MinVersion: tls.VersionTLS12,
@@ -39,9 +40,11 @@ func (h *HTTPClient) Do(request *http.Request) (body []byte, err error) {
 		},
 	}
 	if proxy != "" {
-		client.Transport.(*http.Transport).Proxy = http.ProxyURL(proxyURL)
+		h.client.Transport.(*http.Transport).Proxy = http.ProxyURL(proxyURL)
 	}
-	response, err := client.Do(request)
+}
+func (h *HTTPClient) Do(request *http.Request) (body []byte, err error) {
+	response, err := h.client.Do(request)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)

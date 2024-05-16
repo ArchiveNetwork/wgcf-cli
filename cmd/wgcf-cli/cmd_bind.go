@@ -9,8 +9,11 @@ import (
 )
 
 var bindCmd = &cobra.Command{
-	Use:     "bind",
-	Short:   "Check current bind devices",
+	Use:   "bind",
+	Short: "Check current bind devices",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		client.New()
+	},
 	Run:     bind,
 	PostRun: update,
 }
@@ -32,7 +35,6 @@ func bind(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	var client utils.HTTPClient
 	if _, err := client.Do(request); err != nil {
 		client.HandleBody()
 		fmt.Fprintln(os.Stderr, "Error:", err)

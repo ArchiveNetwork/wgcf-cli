@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ArchiveNetwork/wgcf-cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,7 @@ var rootCmd = &cobra.Command{
 }
 
 var (
+	client     utils.HTTPClient
 	configPath string
 )
 

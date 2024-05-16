@@ -38,6 +38,7 @@ func pre_register(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 	}
+	client.New()
 }
 
 func register(cmd *cobra.Command, args []string) {
@@ -67,7 +68,6 @@ func register(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	var client utils.HTTPClient
 	body, err := client.Do(request)
 	if err != nil {
 		client.HandleBody()
