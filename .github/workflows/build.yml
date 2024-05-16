@@ -50,7 +50,7 @@ jobs:
               LAST_TAG=$(git tag --sort=-v:refname | grep -vE "alpha|beta|rc" | grep -v "${{ github.ref_name }}" | head -1)
             fi
             git log --format="- %h%n%s%n%b" $LAST_TAG...HEAD > changelog.md
-            echo **Full Changelog**: ${{ github.repository }}/compare/$LAST_TAG...${{ github.ref_name }} >> changelog.md
+            echo **Full Changelog**: https://github.com/${{ github.repository }}/compare/$LAST_TAG...${{ github.ref_name }} >> changelog.md
 
       - name: Create release
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
