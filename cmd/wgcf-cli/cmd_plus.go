@@ -37,7 +37,7 @@ func plus(cmd *cobra.Command, args []string) {
 	info_str := "\033[1;36mINFO:\033[0m"
 	var wg sync.WaitGroup
 	var currentStep uint = 1
-	var added uint8
+	var added uint
 	ctx, cancel := context.WithCancel(context.Background())
 	_, id := utils.GetTokenID(configPath)
 	return_chan := make(chan bool)
