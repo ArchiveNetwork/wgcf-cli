@@ -1,7 +1,7 @@
 # wgcf-cli
 A command-line tool for Cloudflare-WARP API, built using Cobra.<br>
 Thanks: [@fscarmen](https://github.com/fscarmen/), [fscarmen/warp](https://gitlab.com/fscarmen/warp/), [@badafans](https://github.com/badafans), [badafans/warp-reg](https://github.com/badafans/warp-reg)<br>
-
+The name was taken from [ViRb3/wgcf](https://github.com/ViRb3/wgcf), but aside from the similar names, they are not actually related.
 ```
 ❯ wgcf-cli 
 A command-line tool for Cloudflare-WARP API, built using Cobra.
@@ -39,5 +39,8 @@ make
 ```bash
 -trimpath $(BUILD_MODE) -tags=$(TAGS) -mod=readonly -modcacherw -v -ldflags "$(LDFLAGS)"
 ```
-2. `CGO_ENABLED`, Default: `0`
+2. `CGO_ENABLED`, Default: 
+```bash
+$(shell go env CGO_ENABLED)
+```
 3. `TAGS`, Default: ` `
