@@ -60,7 +60,7 @@ func init() {
 
 	generateCmd.Flags().String("output-file", "default", "output file name. Supported values: 'default'/'stdout'/any file path")
 	generateCmd.Flags().String(asString(Xray)+"-module", "", "xray top-level config module ('inbounds' as example). By default generate no top-level module")
-	generateCmd.Flags().String(asString(Xray)+"-tag", "wireguard", "'Tag' field of xray config. 'wireguard' by default")
+	generateCmd.Flags().String(asString(Xray)+"-tag", "wireguard", "'Tag' field of xray config")
 }
 
 func asString[V fmt.Stringer](object V) string {
