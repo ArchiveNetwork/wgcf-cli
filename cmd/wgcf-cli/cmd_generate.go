@@ -16,7 +16,7 @@ import (
 
 var generateCmd = &cobra.Command{
 	Use:       "generate",
-	Short:     "Generate a xray/sing-box config",
+	Short:     "Generate a xray/sing-box/wg-quick config",
 	Run:       generate,
 	Args:      cobra.OnlyValidArgs,
 	ValidArgs: []string{"--xray", "--sing-box", "--wg", "--wg-quick", "--output-file"},
