@@ -163,11 +163,20 @@ jobs:
           path: |
             ./build_assets/*
 
-      - name: Upload binaries to release
+      - name: Upload archives to release
         uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         if: github.event_name == 'release' || (github.event_name == 'push' && (contains(github.ref, 'refs/tags/')))
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./wgcf-cli-${{ env.ASSET_NAME }}.tar.zstd*
+          tag: ${{ github.ref }}
+          file_glob: true
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
+        if: github.event_name == 'release' || (github.event_name == 'push' && (contains(github.ref, 'refs/tags/')))
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./wgcf-cli-${{ env.ASSET_NAME }}
           tag: ${{ github.ref }}
           file_glob: true
