@@ -51,6 +51,9 @@ func TestRootCmd(t *testing.T) {
 	rootCmd.SetArgs([]string{"generate", "--wg"})
 	must(rootCmd.Execute())
 
+	rootCmd.SetArgs([]string{"generate", "--wg-quick"})
+	must(rootCmd.Execute())
+
 	rootCmd.SetArgs([]string{"generate", "--sing-box"})
 	must(rootCmd.Execute())
 
