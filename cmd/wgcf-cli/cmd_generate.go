@@ -19,7 +19,7 @@ var generateCmd = &cobra.Command{
 	Short:     "Generate a xray/sing-box/wg-quick config",
 	Run:       generate,
 	Args:      cobra.OnlyValidArgs,
-	ValidArgs: []string{"--xray", "--xray-module", "--xray-tag", "--sing-box", "--wg", "--wg-quick", "--output-file"},
+	ValidArgs: []string{"--xray", "--xray-module", "--xray-tag", "--xray-indent-width", "--sing-box", "--wg", "--wg-quick", "--output-file"},
 }
 
 type OutputFileType int8
@@ -61,6 +61,7 @@ func init() {
 	generateCmd.Flags().String("output-file", "default", "output file name. Supported values: 'default'/'stdout'/any file path")
 	generateCmd.Flags().String(asString(Xray)+"-module", "", "xray top-level config module ('inbounds' as example). By default generate no top-level module")
 	generateCmd.Flags().String(asString(Xray)+"-tag", "wireguard", "'Tag' field of xray config")
+	generateCmd.Flags().Uint8(asString(Xray)+"-indent-width", 4, "indentation size for xray config")
 }
 
 func asString[V fmt.Stringer](object V) string {
@@ -175,10 +176,11 @@ func generate(cmd *cobra.Command, args []string) {
 
 	switch generator {
 	case Xray:
-		conf_module, _ := cmd.Flags().GetString("xray-module")
-		tag, _ := cmd.Flags().GetString("xray-tag")
+		conf_module, _ := cmd.Flags().GetString(asString(Xray) + "-module")
+		tag, _ := cmd.Flags().GetString(asString(Xray) + "-tag")
+		indent_width, _ := cmd.Flags().GetUint8(asString(Xray) + "-indent-width")
 
-		body, err = utils.GenXray(resStruct, tag, conf_module)
+		body, err = utils.GenXray(resStruct, tag, conf_module, indent_width)
 		if err != nil {
 			ExitDefault(err)
 		}
@@ -193,7 +195,7 @@ func generate(cmd *cobra.Command, args []string) {
 
 	switch output_type {
 	case Stdout:
-		_, err = fmt.Print(body)
+		_, err = fmt.Print(string(body))
 		if err != nil {
 			ExitDefault(err)
 		}

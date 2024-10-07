@@ -3,11 +3,12 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	C "github.com/ArchiveNetwork/wgcf-cli/constant"
 )
 
-func GenXray(resStruct C.Response, tag string, config_module string) (body []byte, err error) {
+func GenXray(resStruct C.Response, tag string, config_module string, indent_size uint8) (body []byte, err error) {
 	config_body_json := C.Xray{
 		Protocol: "wireguard",
 		Settings: struct {
@@ -39,11 +40,13 @@ func GenXray(resStruct C.Response, tag string, config_module string) (body []byt
 		},
 		Tag: tag,
 	}
+	
+	indent := strings.Repeat(" ", int(indent_size))
 	if config_module == "" {
-		body, err = json.MarshalIndent(config_body_json, "", "    ")
+		body, err = json.MarshalIndent(config_body_json, "", indent)
 	} else {
 		var config_json = map[string][]C.Xray{config_module: {config_body_json}}
-		body, err = json.MarshalIndent(config_json, "", "    ")
+		body, err = json.MarshalIndent(config_json, "", indent)
 	}
 	return
 }
