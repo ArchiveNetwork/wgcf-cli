@@ -90,6 +90,16 @@ func ternary[V any](condition bool, on_true V, on_false V) V {
 	return on_false
 }
 
+func countTrue(args ...bool) uint {
+	var true_count uint = 0
+	for _, v := range args {
+		if v {
+			true_count += 1
+		}
+	}
+	return true_count
+}
+
 func detectGeneratorType(cmd *cobra.Command) (GeneratorType, error) {
 	xray, _ := cmd.Flags().GetBool(asString(Xray))
 	sing, _ := cmd.Flags().GetBool(asString(SingBox))
@@ -98,12 +108,9 @@ func detectGeneratorType(cmd *cobra.Command) (GeneratorType, error) {
 		wg, _ = cmd.Flags().GetBool("wg")
 	}
 
-	var options uint8 = 0
-	options |= ternary(xray, uint8(0b001), 0)
-	options |= ternary(sing, uint8(0b010), 0)
-	options |= ternary(wg, uint8(0b100), 0)
-	if c := bits.OnesCount8(options); c != 1 {
-		if c == 0 {
+	var flagsEnabled = countTrue(xray, sing, wg)
+	if flagsEnabled != 1 {
+		if flagsEnabled == 0 {
 			return None, errors.New("generator not specified")
 		} else {
 			return None, errors.New("multiple generators not supported")
