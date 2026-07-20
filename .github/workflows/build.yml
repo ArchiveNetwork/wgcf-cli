@@ -27,7 +27,7 @@ jobs:
     outputs:
       pre_release: ${{ steps.check.outputs.pre-release }}
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         if: github.event_name == 'push' && (contains(github.ref, 'refs/tags/'))
 
       - name: Check release type
@@ -108,7 +108,7 @@ jobs:
       CGO_ENABLED: 0
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
           
       - name: Show workflow information 
         run: |
@@ -117,7 +117,7 @@ jobs:
           echo "ASSET_NAME=$_NAME" >> $GITHUB_ENV
 
       - name: Set up Go
-        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version: 'stable'
           check-latest: true
@@ -157,14 +157,14 @@ jobs:
           done
 
       - name: Upload files to Artifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: wgcf-cli-${{ env.ASSET_NAME }}
           path: |
             ./build_assets/*
 
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # v2
         if: github.event_name == 'release' || (github.event_name == 'push' && (contains(github.ref, 'refs/tags/')))
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
